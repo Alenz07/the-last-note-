@@ -21,6 +21,10 @@ export const SITE = {
 } as const;
 
 export const nav = {
+  write: 'Write a link',
+  home: 'Home',
+  chains: 'Chains',
+  how: 'How it works',
   myLinks: 'Your links',
   find: 'Lost a link?',
   unsealed: 'Unsealed',
@@ -41,7 +45,21 @@ export const landing = {
   lastLink: (ago: string | null, city: string | null) =>
     ago ? join(`last link ${ago}`, city) : 'waiting for the first link',
   links: (n: number) => (n === 1 ? '1 link' : `${formatCount(n)} links`),
-  enter: (pricePaise: number) => `Read the last one · ${rupees(pricePaise)}`,
+  enter: (pricePaise: number) => `Reveal the last link · ${rupees(pricePaise)}`,
+  latestEyebrow: 'Latest link',
+  badges: ['Anonymous', 'Real', 'Instant'],
+  whyTitle: 'Why people stay',
+  why: [
+    { title: '100% anonymous', desc: 'No accounts, no profiles. A device and a number.' },
+    { title: 'Real & unfiltered', desc: 'Written by whoever came before you. Unedited.' },
+    { title: 'One link at a time', desc: `Pay ₹5, read one, leave yours. Curiosity never ends.` },
+    { title: 'Kept safe', desc: 'Filters and humans keep contact details and abuse out.' },
+  ],
+  manifesto: {
+    lines: ['No profiles.', 'No followers.', 'No likes.'],
+    accent: 'Just strangers leaving something behind.',
+  },
+  totalLine: (n: number) => `${formatCount(n)} links left by strangers so far.`,
 } as const;
 
 export const teaser = {

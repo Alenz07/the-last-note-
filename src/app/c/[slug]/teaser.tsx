@@ -8,6 +8,8 @@ import { env } from '@/lib/env';
 import { EventBeacon, LiveStats, PayButton } from '@/components/flow';
 import { Footer } from '@/components/ui/Footer';
 import { Header } from '@/components/ui/Header';
+import { HeroScene } from '@/components/ui/HeroScene';
+import { HowItWorks } from '@/components/ui/HowItWorks';
 import { SealedTile } from '@/components/ui/SealedTile';
 
 /**
@@ -47,16 +49,18 @@ export async function Teaser({ slug, position }: { slug: string; position?: numb
     <main className="page">
       <Header right={<Link href={`/c/${chain.slug}/unsealed`}>{nav.unsealed}</Link>} />
 
-      <section className={`mt-10 tint-${chain.tint}`}>
-        <p className="eyebrow">{chain.title}</p>
-        <h1 className="hero mt-3 text-[2.4rem] text-ink sm:text-5xl">
-          {sealed
-            ? chain.revealCount > 1
-              ? copy.heroRange(Math.max(1, sealed.position - chain.revealCount + 1), sealed.position)
-              : copy.hero(sealed.position)
-            : copy.heroFirst}
-        </h1>
-      </section>
+      <HeroScene className={`mt-10 pb-10 tint-${chain.tint}`}>
+        <section>
+          <p className="eyebrow">{chain.title}</p>
+          <h1 className="hero mt-3 text-[2.4rem] text-ink sm:text-5xl">
+            {sealed
+              ? chain.revealCount > 1
+                ? copy.heroRange(Math.max(1, sealed.position - chain.revealCount + 1), sealed.position)
+                : copy.hero(sealed.position)
+              : copy.heroFirst}
+          </h1>
+        </section>
+      </HeroScene>
 
       {sealed ? (
         <section className="mt-8">
@@ -91,14 +95,7 @@ export async function Teaser({ slug, position }: { slug: string; position?: numb
         )}
       </div>
 
-      <ol className="mt-14 flex flex-col gap-3 text-ink-muted">
-        {copy.howItWorks.map((line, i) => (
-          <li key={line} className="flex gap-4">
-            <span className="display num text-ink-faint">{i + 1}</span>
-            <span>{line}</span>
-          </li>
-        ))}
-      </ol>
+      <HowItWorks className="mt-14" />
 
       <Footer />
       <EventBeacon name="chain_view" chainSlug={chain.slug} />

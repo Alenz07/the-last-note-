@@ -73,7 +73,16 @@ export function TileFoot({ children, className = '' }: { children: ReactNode; cl
   return <footer className={`mt-4 flex flex-col gap-1 text-sm text-ink-muted ${className}`}>{children}</footer>;
 }
 
-/** User-written text. Preserves line breaks; never renders HTML. */
-export function TileBody({ text, className = '' }: { text: string; className?: string }) {
-  return <p className={`mt-4 whitespace-pre-wrap text-[17px] leading-relaxed text-ink ${className}`}>{text}</p>;
+/** User-written text, set like a letter: display serif under a cast-gold opening quote. Never renders HTML. */
+export function TileBody({ text, quote = true, className = '' }: { text: string; quote?: boolean; className?: string }) {
+  return (
+    <div className={`mt-4 ${className}`}>
+      {quote ? (
+        <span aria-hidden className="quote-mark">
+          &ldquo;
+        </span>
+      ) : null}
+      <p className="note-serif whitespace-pre-wrap text-ink">{text}</p>
+    </div>
+  );
 }
