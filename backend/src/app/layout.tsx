@@ -1,16 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
 import './globals.css';
-
-const instrumentSerif = localFont({
-  src: [
-    { path: '../../public/fonts/InstrumentSerif-Regular.ttf', weight: '400', style: 'normal' },
-    { path: '../../public/fonts/InstrumentSerif-Italic.ttf', weight: '400', style: 'italic' },
-  ],
-  variable: '--font-instrument-serif',
-  display: 'swap',
-  preload: true,
-});
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
@@ -20,8 +9,6 @@ export const metadata: Metadata = {
   description: 'Pay ₹5. Read what the last stranger left. Leave yours for the next.',
   applicationName: 'Kadi',
   manifest: '/manifest.webmanifest',
-  openGraph: { siteName: 'Kadi', type: 'website', locale: 'en_IN' },
-  twitter: { card: 'summary_large_image' },
   robots: { index: true, follow: true },
 };
 
@@ -34,7 +21,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} h-full antialiased`}>
+    <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

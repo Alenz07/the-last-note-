@@ -6,7 +6,7 @@
 #
 services:
   app:
-    build: .
+    build: ./backend
     restart: unless-stopped
     env_file: .env
     environment:

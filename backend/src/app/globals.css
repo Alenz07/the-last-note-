@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Neutral baseline while the public UI is rebuilt.
+   Tokens + the utility classes that admin, legal pages and the flow
+   components (PayButton, Composer…) depend on. The full previous design
+   lives in git: commit "Checkpoint before frontend reset".
+   ------------------------------------------------------------------ */
+@theme {
+  --color-bg: #090a0c;
+  --color-surface: #14110d;
+  --color-surface-2: #1c1813;
+  --color-line: #2b2721;
+  --color-line-gold: #6f5a3a;
+  --color-ink: #f2ede3;
+  --color-ink-muted: #a89e8b;
+  --color-ink-faint: #6b6353;
+  --color-accent: #c9a15a;
+  --color-accent-strong: #d8b978;
+  --color-accent-ink: #221a0b;
+  --color-danger: #d9635f;
+
+  --color-tint-wine: #7a1f3d;
+  --color-tint-teal: #1f6f6b;
+  --color-tint-indigo: #34348f;
+  --color-tint-amber: #8a5a12;
+  --color-tint-moss: #3f6b2a;
+  --color-tint-slate: #3c4656;
+
+  --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tint helpers (admin pills, future tiles). */
+.tint-wine { --tint: var(--color-tint-wine); }
+.tint-teal { --tint: var(--color-tint-teal); }
+.tint-indigo { --tint: var(--color-tint-indigo); }
+.tint-amber { --tint: var(--color-tint-amber); }
+.tint-moss { --tint: var(--color-tint-moss); }
+.tint-slate { --tint: var(--color-tint-slate); }
+
+/* Card shell used by admin and the flow components. */
+.tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 120ms ease, opacity 120ms ease, background-color 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-accent-ink); }
+.btn-primary:hover { background: var(--color-accent-strong); }
+.btn-ghost { background: transparent; color: var(--color-ink); border: 1px solid var(--color-line); }
+.btn-ghost:hover { background: var(--color-surface-2); }
+.btn-quiet { background: transparent; color: var(--color-ink-muted); min-height: 2.5rem; font-weight: 500; font-size: 0.9375rem; }
+.btn-danger { background: color-mix(in oklab, var(--color-danger) 18%, transparent); color: var(--color-danger); border: 1px solid color-mix(in oklab, var(--color-danger) 40%, transparent); }
+
+.field {
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  color: var(--color-ink);
+  padding: 0.9rem 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  outline: none;
+}
+.field:focus { border-color: color-mix(in oklab, var(--color-accent) 60%, var(--color-line)); }
+.field::placeholder { color: var(--color-ink-faint); }
+
+/* Typography helpers */
+.display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.eyebrow { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-muted); }
+
+/* Layout helpers used by legal pages and flow components. */
+.page { width: 100%; max-width: 28rem; margin-inline: auto; padding: 1.25rem 1.25rem 6rem; }
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--color-bg) 65%, transparent);
+}
+
+audio { width: 100%; color-scheme: dark; }
