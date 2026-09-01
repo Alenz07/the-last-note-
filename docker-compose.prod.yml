@@ -1,0 +1,67 @@
+# Production on one VPS (Hetzner CX22 / DO Bangalore $6): app + Postgres + Redis + Caddy (auto-HTTPS).
+# Put Cloudflare (free) in front for edge cache + DDoS; media goes to R2 via env (see .env.example).
+#
+#   cp .env.example .env   # fill APP_SECRET, ADMIN_PASSWORD, DOMAIN, R2 keys, gateway keys
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://kadi:${POSTGRES_PASSWORD:-kadi}@db:5432/kadi
+      REDIS_URL: redis://redis:6379
+      NEXT_PUBLIC_APP_URL: https://${DOMAIN}
+      SEED_ON_EMPTY: ${SEED_ON_EMPTY:-false}
+    depends_on: [db, redis]
+    expose: ['3000']
+    volumes:
+      # only used if STORAGE_DRIVER=local; R2 is the intended production store
+      - media:/app/.data
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kadi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kadi}
+      POSTGRES_DB: kadi
+    volumes: ['pgdata:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kadi']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--maxmemory', '128mb', '--maxmemory-policy', 'allkeys-lru', '--save', '']
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ['80:80', '443:443']
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+  # nightly pg_dump → ./backups (ship this folder to R2 with rclone/cron)
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-kadi}
+    volumes: ['./backups:/backups']
+    entrypoint: >
+      /bin/sh -c "while true; do
+        pg_dump -h db -U kadi kadi | gzip > /backups/kadi-$$(date +%F).sql.gz;
+        find /backups -name '*.sql.gz' -mtime +14 -delete;
+        sleep 86400; done"
+    depends_on: [db]
+volumes:
+  pgdata:
+  media:
+  caddy_data:
+  caddy_config:

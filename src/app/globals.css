@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Kadi design tokens — dark, quiet, one accent. The tile is the product.
+   ------------------------------------------------------------------ */
+@theme {
+  /* Warm charcoal + antique gold. Almost-black is warm, not blue. */
+  --color-bg: #090a0c;
+  --color-surface: #14110d;
+  --color-surface-2: #1c1813;
+  --color-line: #2b2721;
+  /* Darker muted gold-brown — for accented dividers, quote marks, seal rings. */
+  --color-line-gold: #6f5a3a;
+  --color-ink: #f2ede3;
+  --color-ink-muted: #a89e8b;
+  --color-ink-faint: #6b6353;
+  /* Muted amber/gold — the one action colour. Deliberately not bright yellow. */
+  --color-accent: #c9a15a;
+  --color-accent-strong: #d8b978;
+  --color-accent-ink: #221a0b;
+  --color-danger: #d9635f;
+
+  --color-tint-wine: #7a1f3d;
+  --color-tint-teal: #1f6f6b;
+  --color-tint-indigo: #34348f;
+  --color-tint-amber: #8a5a12;
+  --color-tint-moss: #3f6b2a;
+  --color-tint-slate: #3c4656;
+
+  --font-display: var(--font-instrument-serif), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", "Helvetica Neue", Arial, sans-serif;
+
+  --radius-tile: 1.25rem;
+  --shadow-tile: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 24px 70px -34px rgb(0 0 0 / 0.85);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tint helpers: set --tint on a tile wrapper, everything inside reads it. */
+.tint-wine { --tint: var(--color-tint-wine); }
+.tint-teal { --tint: var(--color-tint-teal); }
+.tint-indigo { --tint: var(--color-tint-indigo); }
+.tint-amber { --tint: var(--color-tint-amber); }
+.tint-moss { --tint: var(--color-tint-moss); }
+.tint-slate { --tint: var(--color-tint-slate); }
+
+/* The tile primitive. The reading tile stays a quiet warm dark; the tint is only a
+   whisper in one corner (the reference keeps note cards neutral, gold does the work). */
+.tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-tile);
+  background:
+    radial-gradient(130% 90% at 0% 0%, color-mix(in oklab, var(--tint, var(--color-tint-slate)) 20%, transparent) 0%, transparent 62%),
+    var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-tile);
+}
+/* Category tiles opt into a bolder wash of their own colour. */
+.tile-vivid {
+  background:
+    radial-gradient(120% 100% at 50% 0%, color-mix(in oklab, var(--tint, var(--color-tint-slate)) 48%, transparent) 0%, transparent 70%),
+    var(--color-surface);
+}
+.tile-quiet {
+  background: transparent;
+  box-shadow: none;
+}
+.tile-seal {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+
+/* Sealed text: redaction bars sized to the real word lengths (see docs/MYSTERY.md).
+   Bars, not blur — blur is reversible and expensive on cheap GPUs. */
+.redacted {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 0.5em;
+  line-height: 1;
+}
+.redacted-word {
+  display: inline-block;
+  height: 0.9em;
+  border-radius: 0.2em;
+  background: color-mix(in oklab, var(--color-ink) 14%, transparent);
+  animation: shimmer 4s ease-in-out infinite;
+}
+.redacted-word:nth-child(3n) { animation-delay: -1.3s; }
+.redacted-word:nth-child(3n + 1) { animation-delay: -2.6s; }
+@keyframes shimmer {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* Legacy block bars (no word data). Prefer .redacted. */
+.sealed-lines > span {
+  display: block;
+  height: 0.7rem;
+  border-radius: 0.35rem;
+  background: color-mix(in oklab, var(--color-ink) 12%, transparent);
+}
+
+/* Live indicator next to "last link 2 min ago" */
+.pulse-dot {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: var(--tint, var(--color-ink-muted));
+  box-shadow: 0 0 0 0 color-mix(in oklab, var(--tint, var(--color-ink-muted)) 50%, transparent);
+  animation: pulse 2.4s ease-out infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--tint, var(--color-ink-muted)) 50%, transparent); }
+  70% { box-shadow: 0 0 0 0.5rem transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1;
+  transition: transform 120ms ease, opacity 120ms ease, background-color 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(1px) scale(0.995); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-accent-ink); font-weight: 600; letter-spacing: 0.01em; }
+.btn-primary:hover { background: var(--color-accent-strong); }
+/* Ghost = the "Leave something behind" secondary: warm gold hairline, not grey. */
+.btn-ghost { background: transparent; color: var(--color-ink); border: 1px solid color-mix(in oklab, var(--color-line-gold) 55%, var(--color-line)); }
+.btn-ghost:hover { background: color-mix(in oklab, var(--color-accent) 8%, transparent); border-color: color-mix(in oklab, var(--color-line-gold) 80%, transparent); }
+.btn-quiet { background: transparent; color: var(--color-ink-muted); min-height: 2.5rem; font-weight: 500; font-size: 0.9375rem; }
+.btn-danger { background: color-mix(in oklab, var(--color-danger) 18%, transparent); color: var(--color-danger); border: 1px solid color-mix(in oklab, var(--color-danger) 40%, transparent); }
+
+.field {
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  color: var(--color-ink);
+  padding: 0.9rem 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  outline: none;
+}
+.field:focus { border-color: color-mix(in oklab, var(--color-accent) 60%, var(--color-line)); }
+.field::placeholder { color: var(--color-ink-faint); }
+
+/* The one motion that matters: unseal */
+@keyframes unseal {
+  0% { opacity: 0; transform: translateY(6px); filter: saturate(0.6); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+.unseal { animation: unseal 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.unseal-delay { animation-delay: 180ms; }
+.unseal-delay-2 { animation-delay: 360ms; }
+
+@keyframes tick {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+.tick { animation: tick 300ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .unseal, .tick, .redacted-word, .pulse-dot { animation: none; }
+}
+
+/* Typography helpers */
+.display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.eyebrow { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-muted); }
+/* The one italic voice on the site: the hero sentence. Numbers and titles stay upright. */
+.hero { font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: -0.015em; line-height: 1.05; text-wrap: balance; }
+
+/* Page container — it's a phone product; desktop gets a centred column */
+.page { width: 100%; max-width: 28rem; margin-inline: auto; padding: 1.25rem 1.25rem 6rem; }
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--color-bg) 65%, transparent);
+}
+
+audio { width: 100%; color-scheme: dark; }
