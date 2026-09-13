@@ -6,6 +6,7 @@ import type { ChainSummary, SealedMeta } from '@/lib/types';
 import { ArchScene } from '@/components/ArchScene';
 import { BoltIcon, ChainGlyph, ChainIcon, DownloadIcon, EyeIcon, LockIcon, MaskIcon, PersonIcon, QuillIcon, ShieldIcon } from '@/components/Icons';
 import { Redacted } from '@/components/Redacted';
+import { ContactCard } from '@/components/Social';
 
 export const revalidate = 5;
 
@@ -152,6 +153,9 @@ export default async function Landing() {
           </ul>
         </section>
       </div>
+
+      {/* ---------------- contact ---------------- */}
+      <ContactCard className="mt-4" />
 
       {/* ---------------- manifesto ---------------- */}
       <section className="card mt-4 p-9 text-center sm:p-12">

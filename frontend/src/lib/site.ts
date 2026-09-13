@@ -19,6 +19,7 @@ export const SITE = {
 export const SOCIAL = {
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_URL || '',
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || '',
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || '',
 } as const;
 
-export const hasSocial = Boolean(SOCIAL.whatsapp || SOCIAL.instagram);
+export const hasSocial = Boolean(SOCIAL.whatsapp || SOCIAL.instagram || SOCIAL.email);

@@ -96,6 +96,13 @@ export const InstagramIcon = ({ size = 16, className }: P) => (
   </svg>
 );
 
+export const MailIcon = ({ size = 16, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+    <path d="m3.9 7.2 7 5.2a2 2 0 0 0 2.2 0l7-5.2" />
+  </svg>
+);
+
 export const DownloadIcon = ({ size = 16, className }: P) => (
   <svg {...base(size)} className={className}>
     <path d="M12 3.5v11" />

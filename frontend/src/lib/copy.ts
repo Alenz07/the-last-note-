@@ -28,6 +28,15 @@ export const social = {
   privacy: 'A broadcast channel. Nobody sees your number, and nothing you wrote is ever posted.',
 } as const;
 
+export const contact = {
+  title: 'Come find us',
+  body: 'The chain runs on its own, but there are people behind it. Follow along between visits, or just say something.',
+  whatsapp: { label: 'WhatsApp', hint: 'The channel — we post when the chain moves' },
+  instagram: { label: 'Instagram', hint: 'Notes worth reading twice' },
+  email: { label: 'Email', hint: 'Questions, removals, anything at all' },
+  note: 'The channel is a broadcast. Nobody sees your number, and nothing you wrote is ever posted.',
+} as const;
+
 export const pay = {
   confirming: 'Confirming your payment…',
   confirmingSub: 'This takes a moment. Please don’t close this page.',
