@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   THE LAST NOTE — candlelit charcoal + antique gold.
+   bg #090A0C · ink #F2EDE3 · gold #C9A15A · gold-line #6F5A3A
+   ------------------------------------------------------------------ */
+@theme {
+  --color-bg: #090a0c;
+  --color-surface: #101013;
+  --color-surface-2: #16151a;
+  --color-card: #121114;
+  --color-line: #26231d;
+  --color-line-gold: #6f5a3a;
+  --color-ink: #f2ede3;
+  --color-ink-muted: #a79d8a;
+  --color-ink-faint: #6b6353;
+  --color-gold: #c9a15a;
+  --color-gold-strong: #dbb877;
+  --color-gold-ink: #1f1706;
+  --color-danger: #d9635f;
+
+  --font-serif: var(--font-instrument-serif), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+:root { color-scheme: dark; }
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- typography ---------- */
+.serif { font-family: var(--font-serif); font-weight: 400; letter-spacing: 0.005em; }
+.hero-title { font-family: var(--font-serif); font-weight: 400; line-height: 1.08; letter-spacing: 0.002em; text-wrap: balance; }
+.eyebrow { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-ink-muted); }
+.num { font-variant-numeric: tabular-nums lining-nums; }
+.wordmark { font-family: var(--font-serif); letter-spacing: 0.22em; text-transform: uppercase; }
+
+/* section heading: serif with a short gold rule under it */
+.section-h { font-family: var(--font-serif); font-size: 1.6rem; text-align: center; color: var(--color-ink); }
+.section-h::after { content: ''; display: block; width: 2.5rem; height: 1px; margin: 0.7rem auto 0; background: var(--color-line-gold); }
+
+/* the big cast-gold opening quote */
+.qmark { display: block; height: 0.6em; font-family: var(--font-serif); font-size: 2.4rem; line-height: 0.85; color: var(--color-gold); }
+
+/* ---------- surfaces ---------- */
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+}
+.card-glow {
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.04) inset,
+    0 30px 80px -30px rgb(0 0 0 / 0.9),
+    0 0 70px -24px color-mix(in oklab, var(--color-gold) 22%, transparent);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(1px); }
+.btn-gold { background: var(--color-gold); color: var(--color-gold-ink); }
+.btn-gold:hover { background: var(--color-gold-strong); }
+.btn-line { background: transparent; color: var(--color-ink); border: 1px solid color-mix(in oklab, var(--color-line-gold) 70%, transparent); }
+.btn-line:hover { border-color: var(--color-line-gold); background: color-mix(in oklab, var(--color-gold) 7%, transparent); }
+
+/* Aliases for the flow components ported from the backend, so payment/composer
+   markup stays untouched and still speaks this theme. */
+.btn-primary { background: var(--color-gold); color: var(--color-gold-ink); }
+.btn-primary:hover { background: var(--color-gold-strong); }
+.btn-ghost { background: transparent; color: var(--color-ink); border: 1px solid color-mix(in oklab, var(--color-line-gold) 70%, transparent); }
+.btn-ghost:hover { border-color: var(--color-line-gold); background: color-mix(in oklab, var(--color-gold) 7%, transparent); }
+.btn-quiet {
+  background: transparent;
+  color: var(--color-ink-muted);
+  min-height: 2.5rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.btn-quiet:hover { color: var(--color-ink); }
+.btn-danger {
+  background: color-mix(in oklab, var(--color-danger) 16%, transparent);
+  color: var(--color-danger);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 40%, transparent);
+}
+.tile { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 1rem; }
+.display { font-family: var(--font-serif); font-weight: 400; }
+
+.field {
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 0.85rem;
+  color: var(--color-ink);
+  padding: 0.9rem 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  outline: none;
+}
+.field:focus { border-color: color-mix(in oklab, var(--color-gold) 60%, var(--color-line)); }
+.field::placeholder { color: var(--color-ink-faint); }
+
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--color-bg) 68%, transparent);
+}
+
+/* ---------- gold-ring icon ---------- */
+.ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: var(--color-gold);
+  border: 1px solid color-mix(in oklab, var(--color-line-gold) 85%, transparent);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--color-gold) 9%, transparent), transparent 78%);
+}
+
+/* ---------- sealed text: redaction bars sized to real word lengths ---------- */
+.redacted { display: flex; flex-wrap: wrap; gap: 0.42em 0.5em; line-height: 1; }
+.redacted > span {
+  display: inline-block;
+  height: 0.9em;
+  border-radius: 0.2em;
+  background: color-mix(in oklab, var(--color-ink) 15%, transparent);
+  animation: shimmer 4s ease-in-out infinite;
+}
+.redacted > span:nth-child(3n) { animation-delay: -1.3s; }
+.redacted > span:nth-child(3n + 1) { animation-delay: -2.6s; }
+@keyframes shimmer { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+
+/* ---------- the archway scene ---------- */
+.arch-scene { position: relative; isolation: isolate; overflow: visible; }
+.arch-scene::before {
+  content: '';
+  position: absolute;
+  /* never bleeds below its own box — otherwise it washes over the next section */
+  inset: -4rem -2rem 0;
+  z-index: -1;
+  border-radius: 2rem;
+  background:
+    radial-gradient(34% 46% at 62% 78%, color-mix(in oklab, #eccf94 30%, transparent) 0%, transparent 100%),
+    radial-gradient(62% 76% at 62% 88%, color-mix(in oklab, var(--color-gold) 13%, transparent) 0%, transparent 100%),
+    radial-gradient(120% 110% at 60% 105%, color-mix(in oklab, #362a14 52%, transparent) 0%, transparent 76%);
+  pointer-events: none;
+}
+.arch-scene > img.arch-img {
+  position: absolute;
+  inset: -4rem -2rem -2rem;
+  z-index: -2;
+  width: calc(100% + 4rem);
+  height: calc(100% + 6rem);
+  object-fit: cover;
+  object-position: center 30%;
+  border-radius: 2rem;
+  opacity: 0.62;
+  mask-image: radial-gradient(125% 100% at 50% 42%, black 38%, transparent 80%);
+  pointer-events: none;
+}
+.arch-scene > svg.arch-lines {
+  position: absolute;
+  right: -1rem;
+  bottom: -1.5rem;
+  z-index: -1;
+  width: min(58%, 30rem);
+  height: 82%;
+  color: var(--color-line-gold);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .redacted > span { animation: none; }
+}
