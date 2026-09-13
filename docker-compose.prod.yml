@@ -1,7 +1,7 @@
-# Production on one VPS (Hetzner CX22 / DO Bangalore $6): app + Postgres + Redis + Caddy (auto-HTTPS).
+# Production on one VPS (Hetzner CX22 / DO Bangalore $6): app + web + Postgres + Redis + Caddy (auto-HTTPS).
 # Put Cloudflare (free) in front for edge cache + DDoS; media goes to R2 via env (see .env.example).
 #
-#   cp .env.example .env   # fill APP_SECRET, ADMIN_PASSWORD, DOMAIN, R2 keys, gateway keys
+#   cp .env.example .env   # fill DOMAIN, POSTGRES_PASSWORD, APP_SECRET, ADMIN_PASSWORD, R2 + gateway keys
 #   docker compose -f docker-compose.prod.yml up -d --build
 #
 services:
@@ -19,6 +19,23 @@ services:
     volumes:
       # only used if STORAGE_DRIVER=local; R2 is the intended production store
       - media:/app/.data
+  # The public site. Separate image so it deploys and scales on its own.
+  web:
+    build:
+      context: ./frontend
+      args:
+        # Inlined into the client bundle at build time - runtime env cannot
+        # reach these, so changing a social link means a rebuild, not a restart.
+        NEXT_PUBLIC_SITE_URL: https://${DOMAIN}
+        NEXT_PUBLIC_WHATSAPP_URL: ${NEXT_PUBLIC_WHATSAPP_URL:-}
+        NEXT_PUBLIC_INSTAGRAM_URL: ${NEXT_PUBLIC_INSTAGRAM_URL:-}
+        NEXT_PUBLIC_CONTACT_EMAIL: ${NEXT_PUBLIC_CONTACT_EMAIL:-}
+    restart: unless-stopped
+    environment:
+      # Only used by routes Caddy does not split off; server-side calls go direct.
+      BACKEND_URL: http://app:3000
+    depends_on: [app]
+    expose: ['3001']
   db:
     image: postgres:17-alpine
     restart: unless-stopped
@@ -46,7 +63,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-    depends_on: [app]
+    depends_on: [app, web]
   # nightly pg_dump → ./backups (ship this folder to R2 with rclone/cron)
   backup:
     image: postgres:17-alpine

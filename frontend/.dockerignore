@@ -1,0 +1,16 @@
+# Keep the build context small and secrets out of image layers.
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+.data
+backups
+*.log
+tsconfig.tsbuildinfo
+Dockerfile
+.dockerignore
+README.md
+AGENTS.md
+CLAUDE.md
