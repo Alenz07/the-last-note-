@@ -7,7 +7,8 @@ Target: a 2 vCPU / 4 GB VPS (Hetzner CX22 ≈ €3.8, DigitalOcean Bangalore $6)
 
 - Domain on Cloudflare Registrar (~₹1,000/yr). Keep DNS on Cloudflare, proxy ON (orange cloud).
 - Cloudflare R2: create bucket `kadi-media`, create an API token (Object Read & Write) → `S3_ACCESS_KEY_ID/SECRET`, endpoint `https://<accountid>.r2.cloudflarestorage.com`.
-- Razorpay: account (KYC takes days; test keys work meanwhile). Webhook → `https://<domain>/api/webhooks/razorpay`, events `payment.captured`, `payment.failed`, secret → `RAZORPAY_WEBHOOK_SECRET`.
+- Cashfree (default gateway): account + KYC (sandbox keys work meanwhile). Dashboard → Developers → API Keys → `CASHFREE_APP_ID` / `CASHFREE_SECRET_KEY`. Webhook → `https://<domain>/api/webhooks/cashfree`, events `PAYMENT_SUCCESS_WEBHOOK` + `PAYMENT_FAILED_WEBHOOK`. The webhook is signed with the same secret key, so there is no separate webhook secret.
+- Razorpay (drop-in alternative): webhook → `https://<domain>/api/webhooks/razorpay`, events `payment.captured`, `payment.failed`, secret → `RAZORPAY_WEBHOOK_SECRET`.
 - VPS: Ubuntu 24.04, `apt install docker.io docker-compose-v2 git`.
 
 ## 1. Configure
@@ -30,8 +31,11 @@ STORAGE_DRIVER=s3
 S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
 S3_BUCKET=kadi-media
 S3_ACCESS_KEY_ID=...  S3_SECRET_ACCESS_KEY=...
-PAYMENT_GATEWAY=razorpay   # or keep mock until KYC clears — shows TEST MODE everywhere
-RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... RAZORPAY_WEBHOOK_SECRET=...
+PAYMENT_GATEWAY=cashfree   # cashfree | razorpay | mock (mock shows TEST MODE everywhere)
+CASHFREE_APP_ID=... CASHFREE_SECRET_KEY=... CASHFREE_ENV=production
+# or, for Razorpay:
+# RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... RAZORPAY_WEBHOOK_SECRET=...
+SITE_URL=https://${DOMAIN}   # payment return URLs; same origin as the API in production
 VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... VAPID_SUBJECT=mailto:you@domain   # pnpm vapid
 SEED_ON_EMPTY=false
 LEGAL_ENTITY=... GRIEVANCE_NAME=... GRIEVANCE_EMAIL=...   # legal pages
