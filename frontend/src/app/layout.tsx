@@ -16,6 +16,9 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  // sw.js and the manifest now ship with the pages that register them;
+  // a service worker must be served from the origin it controls.
+  manifest: '/manifest.webmanifest',
   title: { default: `${SITE.name} — ${SITE.tagline}`, template: `%s · ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.name,
