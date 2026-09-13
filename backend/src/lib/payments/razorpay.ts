@@ -1,5 +1,12 @@
 import { hmacHex, safeEqual } from '../crypto';
-import type { CreateOrderInput, CreatedOrder, OrderStatus, PaymentGateway, WebhookEvent } from './types';
+import type {
+  CreateOrderInput,
+  CreatedOrder,
+  OrderStatus,
+  PaymentGateway,
+  WebhookEvent,
+  WebhookHeaders,
+} from './types';
 
 /**
  * Razorpay adapter (Orders API + Checkout.js + webhooks).
@@ -8,6 +15,7 @@ import type { CreateOrderInput, CreatedOrder, OrderStatus, PaymentGateway, Webho
  */
 export class RazorpayGateway implements PaymentGateway {
   readonly name = 'razorpay' as const;
+  readonly verifyMode = 'signature' as const;
   private readonly base = 'https://api.razorpay.com/v1';
 
   constructor(
@@ -53,9 +61,9 @@ export class RazorpayGateway implements PaymentGateway {
     return safeEqual(expected, signature);
   }
 
-  verifyWebhookSignature(rawBody: string, signature: string | null): boolean {
-    if (!signature || !this.webhookSecret) return false;
-    return safeEqual(hmacHex(rawBody, this.webhookSecret), signature);
+  verifyWebhookSignature(rawBody: string, headers: WebhookHeaders): boolean {
+    if (!headers.signature || !this.webhookSecret) return false;
+    return safeEqual(hmacHex(rawBody, this.webhookSecret), headers.signature);
   }
 
   parseWebhook(rawBody: string): WebhookEvent | null {

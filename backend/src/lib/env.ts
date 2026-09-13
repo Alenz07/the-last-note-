@@ -15,6 +15,12 @@ export const env = {
   isBuild: process.env.NEXT_PHASE === 'phase-production-build',
   appName: process.env.APP_NAME || 'Kadi',
   appUrl: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, ''),
+  /**
+   * Where the *user-facing* site lives. Same origin as the API in production
+   * (Caddy fronts both), but a different port in dev where the frontend runs
+   * separately. Payment return URLs must point here, not at the API.
+   */
+  siteUrl: (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001').replace(/\/$/, ''),
   appSecret: process.env.APP_SECRET || 'dev-only-change-me-dev-only-change-me',
   adminPassword: process.env.ADMIN_PASSWORD || 'admin',
   cronSecret: process.env.CRON_SECRET || 'dev-cron',
@@ -35,10 +41,28 @@ export const env = {
     forcePathStyle: bool(process.env.S3_FORCE_PATH_STYLE, false),
   },
 
-  paymentGateway: (process.env.PAYMENT_GATEWAY || 'mock') as 'mock' | 'razorpay',
-  /** True whenever no real money can move: mock gateway, or Razorpay test keys. Drives the "Test mode" badge. */
-  paymentTestMode:
-    (process.env.PAYMENT_GATEWAY || 'mock') === 'mock' || (process.env.RAZORPAY_KEY_ID || '').startsWith('rzp_test_'),
+  paymentGateway: (process.env.PAYMENT_GATEWAY || 'mock') as 'mock' | 'razorpay' | 'cashfree',
+  /** True whenever no real money can move — drives the "Test mode" badge. */
+  paymentTestMode: (() => {
+    const g = process.env.PAYMENT_GATEWAY || 'mock';
+    if (g === 'razorpay') return (process.env.RAZORPAY_KEY_ID || '').startsWith('rzp_test_');
+    if (g === 'cashfree') return (process.env.CASHFREE_ENV || 'sandbox') !== 'production';
+    return true; // mock
+  })(),
+  cashfree: {
+    appId: process.env.CASHFREE_APP_ID || '',
+    secretKey: process.env.CASHFREE_SECRET_KEY || '',
+    /** 'sandbox' = test money, 'production' = real money. */
+    mode: ((process.env.CASHFREE_ENV || 'sandbox') === 'production' ? 'production' : 'sandbox') as
+      | 'sandbox'
+      | 'production',
+    /**
+     * Cashfree requires a 10-digit customer phone on every order, but Kadi has
+     * no accounts and asks for nothing. A single placeholder stands in for all
+     * payers; the payer's real UPI app still collects whatever it needs.
+     */
+    placeholderPhone: process.env.CASHFREE_PLACEHOLDER_PHONE || '9999999999',
+  },
   razorpay: {
     keyId: process.env.RAZORPAY_KEY_ID || '',
     keySecret: process.env.RAZORPAY_KEY_SECRET || '',
@@ -54,7 +78,10 @@ export const env = {
 
 /** Hard limits that are product decisions, not config. */
 export const LIMITS = {
-  bodyMaxChars: 280,
+  /** ~170 words. Long enough for a real paragraph, and enough text per page for search to index. */
+  bodyMaxChars: 1000,
+  /** ~20 words. Blocks "lol" and "nice" without killing the sharp one-liner. */
+  bodyMinChars: 120,
   contactMaxChars: 80,
   voiceMaxSeconds: 30,
   voiceMaxBytes: 1_000_000,

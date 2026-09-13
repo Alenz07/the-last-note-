@@ -1,5 +1,12 @@
 import { randomToken } from '../crypto';
-import type { CreateOrderInput, CreatedOrder, OrderStatus, PaymentGateway, WebhookEvent } from './types';
+import type {
+  CreateOrderInput,
+  CreatedOrder,
+  OrderStatus,
+  PaymentGateway,
+  WebhookEvent,
+  WebhookHeaders,
+} from './types';
 
 /**
  * TEST MODE gateway. No money moves. The checkout sheet in the browser
@@ -8,6 +15,7 @@ import type { CreateOrderInput, CreatedOrder, OrderStatus, PaymentGateway, Webho
  */
 export class MockGateway implements PaymentGateway {
   readonly name = 'mock' as const;
+  readonly verifyMode = 'signature' as const;
 
   async createOrder(input: CreateOrderInput): Promise<CreatedOrder> {
     return {
@@ -24,8 +32,8 @@ export class MockGateway implements PaymentGateway {
     return orderId.startsWith('mock_order_') && paymentId.startsWith('mock_pay_') && signature === 'mock';
   }
 
-  verifyWebhookSignature(_rawBody: string, signature: string | null): boolean {
-    return signature === 'mock';
+  verifyWebhookSignature(_rawBody: string, headers: WebhookHeaders): boolean {
+    return headers.signature === 'mock';
   }
 
   parseWebhook(rawBody: string): WebhookEvent | null {
