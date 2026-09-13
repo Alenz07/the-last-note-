@@ -88,7 +88,7 @@ export const teaser = {
   ctaMicro: (myPosition: number) => `You'll be link ${formatPosition(myPosition)}. Then you write yours.`,
   howItWorks: [
     'Pay ₹5. Read what the last stranger left.',
-    'Leave yours. 280 characters. Ten minutes.',
+    'Leave yours. Up to 1,000 characters. Twenty minutes.',
     "The next stranger reads it. You'll know when.",
   ],
   paused: 'This chain is paused. Nothing is being read or written right now.',

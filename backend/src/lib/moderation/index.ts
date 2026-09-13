@@ -8,6 +8,7 @@ export type ModerationResult =
 
 export const MODERATION_MESSAGES: Record<ModerationReason, string> = {
   empty: 'Write something first.',
+  too_short: `A little more — ${LIMITS.bodyMinChars} characters at least. Someone is paying to read this.`,
   too_long: `Keep it under ${LIMITS.bodyMaxChars} characters.`,
   phone: 'No phone numbers. This stays between strangers.',
   url: 'No links. Words only.',
@@ -49,11 +50,13 @@ function blockedWords(): Set<string> {
   return extra;
 }
 
-export function moderate(input: string, opts: { maxChars?: number } = {}): ModerationResult {
+export function moderate(input: string, opts: { maxChars?: number; minChars?: number } = {}): ModerationResult {
   const maxChars = opts.maxChars ?? LIMITS.bodyMaxChars;
+  const minChars = opts.minChars ?? LIMITS.bodyMinChars;
   const body = input.replace(/\r\n?/g, '\n').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
   if (!body) return fail('empty');
-  if ([...body].length > maxChars) return fail('too_long');
+  const length = [...body].length;
+  if (length > maxChars) return fail('too_long');
 
   const digitsJoined = body.replace(/(?<=\d)[\s\-.()](?=\d)/g, '');
   if (PHONE_RE.test(digitsJoined) || LONG_DIGITS_RE.test(digitsJoined)) return fail('phone');
@@ -70,6 +73,11 @@ export function moderate(input: string, opts: { maxChars?: number } = {}): Moder
   const unique = new Set(words);
   if (words.length >= 6 && unique.size <= 2) return fail('repeat');
   if (/(.)\1{24,}/.test(body)) return fail('repeat');
+
+  // Last, deliberately: the floor is a quality gate, not a safety one. Someone
+  // who writes a phone number in 40 characters hears about the phone number,
+  // not that they are 80 characters short.
+  if (length < minChars) return fail('too_short');
 
   return { ok: true, body };
 }

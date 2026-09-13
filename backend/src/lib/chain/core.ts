@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, ne, notInArray, sql } from 'drizzle-orm';
 import type { Db } from '@/db';
 import { chains, devices, links, payments, reads, reports, type Chain, type Link, type Payment } from '@/db/schema';
 import { newId, randomToken, sha256 } from '../crypto';
@@ -27,6 +27,7 @@ export class ChainError extends Error {
       | 'already_submitted'
       | 'too_large'
       | 'bad_media'
+      | 'nothing_new'
       | 'gateway',
     message: string,
     public readonly status: number = 400,
@@ -65,6 +66,32 @@ export async function getChainRow(db: Db, slug: string): Promise<Chain | null> {
   return c ?? null;
 }
 
+/** Link ids in this chain that this device has already paid to read. */
+async function readLinkIds(db: Db, chainId: string, deviceId: string): Promise<string[]> {
+  const rows = await db
+    .select({ id: reads.linkId })
+    .from(reads)
+    .innerJoin(links, eq(links.id, reads.readerLinkId))
+    .where(and(eq(links.deviceId, deviceId), eq(links.chainId, chainId)));
+  return rows.map((r) => r.id);
+}
+
+/**
+ * What this device is allowed to be shown: a note that was written, is visible,
+ * isn't theirs, and that they haven't already paid to read. Paying twice must
+ * never buy you your own note back, nor the same stranger's note twice.
+ */
+function revealableWhere(chainId: string, deviceId: string, readIds: string[], beforePosition?: number) {
+  return and(
+    eq(links.chainId, chainId),
+    eq(links.status, 'submitted'),
+    eq(links.hidden, false),
+    ne(links.deviceId, deviceId),
+    readIds.length ? notInArray(links.id, readIds) : undefined,
+    beforePosition !== undefined ? lt(links.position, beforePosition) : undefined,
+  );
+}
+
 export async function createPaymentIntent(
   s: Services,
   input: { chainSlug: string; deviceId: string; refPosition?: number | null; city?: string | null },
@@ -74,6 +101,27 @@ export async function createPaymentIntent(
 
   const { banned } = await ensureDevice(s.db, input.deviceId, input.city);
   if (banned) throw new ChainError('banned', 'This device cannot take part.', 403);
+
+  // Refuse the money *before* taking it if there is nothing new here for them.
+  // An empty chain is fine — that's the legitimate "you write the first note" case.
+  const [{ written }] = await s.db
+    .select({ written: sql<number>`count(*)`.mapWith(Number) })
+    .from(links)
+    .where(and(eq(links.chainId, chain.id), eq(links.status, 'submitted'), eq(links.hidden, false)));
+  if (written > 0) {
+    const readIds = await readLinkIds(s.db, chain.id, input.deviceId);
+    const [{ available }] = await s.db
+      .select({ available: sql<number>`count(*)`.mapWith(Number) })
+      .from(links)
+      .where(revealableWhere(chain.id, input.deviceId, readIds));
+    if (available === 0) {
+      throw new ChainError(
+        'nothing_new',
+        'You have read every note in this chain. Come back when a stranger leaves a new one.',
+        409,
+      );
+    }
+  }
 
   let order: CreatedOrder;
   try {
@@ -149,21 +197,15 @@ export async function capturePayment(
         .returning();
       const position = chain.tail;
 
-      // 2. What do they get to read?
+      // 2. What do they get to read? Never their own note, never one they've
+      //    already paid for — in either the shared-link or the latest branch.
+      const readIds = await readLinkIds(tx, chain.id, p.deviceId);
       let revealed: Link[] = [];
       if (chain.revealMode === 'referrer' && p.refPosition) {
         const [r] = await tx
           .select()
           .from(links)
-          .where(
-            and(
-              eq(links.chainId, chain.id),
-              eq(links.position, p.refPosition),
-              eq(links.status, 'submitted'),
-              eq(links.hidden, false),
-              ne(links.deviceId, p.deviceId),
-            ),
-          )
+          .where(and(revealableWhere(chain.id, p.deviceId, readIds), eq(links.position, p.refPosition)))
           .limit(1);
         if (r) revealed = [r];
       }
@@ -171,9 +213,7 @@ export async function capturePayment(
         revealed = await tx
           .select()
           .from(links)
-          .where(
-            and(eq(links.chainId, chain.id), eq(links.status, 'submitted'), eq(links.hidden, false), lt(links.position, position)),
-          )
+          .where(revealableWhere(chain.id, p.deviceId, readIds, position))
           .orderBy(desc(links.position))
           .limit(Math.max(1, chain.revealCount));
         revealed.reverse();

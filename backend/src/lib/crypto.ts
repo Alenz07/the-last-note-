@@ -12,6 +12,10 @@ export const hmac = (data: string, secret: string = env.appSecret): string =>
 export const hmacHex = (data: string, secret: string): string =>
   createHmac('sha256', secret).update(data).digest('hex');
 
+/** Standard base64 (not base64url) — what Cashfree signs its webhooks with. */
+export const hmacBase64 = (data: string, secret: string): string =>
+  createHmac('sha256', secret).update(data).digest('base64');
+
 export const sha256 = (data: string): string => createHash('sha256').update(data).digest('hex');
 
 export function safeEqual(a: string, b: string): boolean {

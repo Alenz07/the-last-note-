@@ -120,10 +120,15 @@ export type RevealView = {
 
 export type PayIntentResponse = {
   orderId: string;
-  gateway: 'mock' | 'razorpay';
+  gateway: 'mock' | 'razorpay' | 'cashfree';
   amountPaise: number;
   checkout: {
+    /** Razorpay: publishable key for Checkout.js. */
     keyId?: string;
+    /** Cashfree: the session its JS SDK opens. */
+    paymentSessionId?: string;
+    /** Cashfree JS SDK mode. */
+    mode?: 'sandbox' | 'production';
     name: string;
     description: string;
     currency: 'INR';
@@ -137,7 +142,7 @@ export type VerifyResponse = {
   alreadyCaptured: boolean;
 };
 
-export type ModerationReason = 'empty' | 'too_long' | 'phone' | 'url' | 'contact' | 'profanity' | 'repeat';
+export type ModerationReason = 'empty' | 'too_short' | 'too_long' | 'phone' | 'url' | 'contact' | 'profanity' | 'repeat';
 
 export type SubmitResponse =
   | { ok: true; linkUrl: string; position: number }
