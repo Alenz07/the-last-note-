@@ -21,7 +21,7 @@ export class MockGateway implements PaymentGateway {
     return {
       orderId: `mock_order_${randomToken(9)}`,
       checkout: {
-        name: 'Kadi (TEST MODE)',
+        name: 'dernote (TEST MODE)',
         description: `₹${(input.amountPaise / 100).toFixed(0)} · one reveal + one link`,
         currency: 'INR',
       },

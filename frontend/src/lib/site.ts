@@ -1,10 +1,10 @@
 /**
- * Brand in ONE place. Switching the product name (The Last Note ↔ Kadi)
+ * Brand in ONE place. Switching the product name (dernote ← dernière note)
  * is an edit to this file and nothing else.
  */
 export const SITE = {
-  name: 'The Last Note',
-  tagline: 'Someone was here before you.',
+  name: 'dernote',
+  tagline: 'A stranger’s words. Your moment. Their tomorrow.',
   description: 'Someone left something here. You don’t know who. ₹5 to read it — then you leave yours for the next stranger.',
 } as const;
 

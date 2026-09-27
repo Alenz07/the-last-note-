@@ -1,9 +1,9 @@
-/* Kadi service worker — Web Push only. No offline caching (pages must stay live). */
+/* dernote service worker — Web Push only. No offline caching (pages must stay live). */
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener('push', (event) => {
-  let data = { title: 'Kadi', body: '', url: '/', tag: 'kadi' };
+  let data = { title: 'dernote', body: '', url: '/', tag: 'kadi' };
   try {
     data = Object.assign(data, event.data ? event.data.json() : {});
   } catch {

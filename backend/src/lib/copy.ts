@@ -12,7 +12,7 @@ const join = (...parts: Array<string | null | undefined | false>) => parts.filte
 const rupees = (paise: number) => `₹${Math.round(paise / 100)}`;
 
 export const SITE = {
-  name: 'Kadi',
+  name: 'dernote',
   domain: 'kadi.in',
   tagline: 'A stranger left something for you.',
   description: '₹5 to read what the last stranger left. Then you leave yours for the next one.',

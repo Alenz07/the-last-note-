@@ -5,9 +5,9 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
-  title: { default: 'Kadi — The Chain', template: '%s · Kadi' },
+  title: { default: 'dernote — the chain', template: '%s · dernote' },
   description: 'Pay ₹5. Read what the last stranger left. Leave yours for the next.',
-  applicationName: 'Kadi',
+  applicationName: 'dernote',
   manifest: '/manifest.webmanifest',
   robots: { index: true, follow: true },
 };

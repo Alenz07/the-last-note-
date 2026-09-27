@@ -13,7 +13,7 @@ function bool(v: string | undefined, dflt: boolean): boolean {
 export const env = {
   isProd,
   isBuild: process.env.NEXT_PHASE === 'phase-production-build',
-  appName: process.env.APP_NAME || 'Kadi',
+  appName: process.env.APP_NAME || 'dernote',
   appUrl: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, ''),
   /**
    * Where the *user-facing* site lives. Same origin as the API in production

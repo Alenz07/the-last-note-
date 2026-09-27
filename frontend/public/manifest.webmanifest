@@ -1,6 +1,6 @@
 {
-  "name": "Kadi",
-  "short_name": "Kadi",
+  "name": "dernote",
+  "short_name": "dernote",
   "description": "A stranger left something for you.",
   "start_url": "/",
   "display": "standalone",

@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-4">
         <div className="flex items-center gap-4">
           <Link href="/admin" className="display text-2xl">
-            Kadi <span className="text-ink-muted">/ admin</span>
+            dernote <span className="text-ink-muted">/ admin</span>
           </Link>
           {env.paymentTestMode ? (
             <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-accent">
