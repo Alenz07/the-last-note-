@@ -28,6 +28,9 @@ COPY --from=build --chown=kadi:kadi /app/.next/static ./.next/static
 COPY --from=build --chown=kadi:kadi /app/public ./public
 # migrations are applied at boot by the app itself
 COPY --from=build --chown=kadi:kadi /app/drizzle ./drizzle
+# The media volume mounts here. Create it owned by the app user first, or
+# Docker creates the mount point as root and every upload fails with EACCES.
+RUN mkdir -p /app/.data && chown kadi:kadi /app/.data
 USER kadi
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1

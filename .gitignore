@@ -38,3 +38,6 @@ next-env.d.ts
 # local data (PGlite db, media, backups)
 .data*/
 backups/
+
+# server-side data: database dumps and the rclone token for offsite backups
+rclone/

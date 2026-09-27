@@ -1,15 +1,38 @@
-# Deploy — one box, ~₹400/month
+# Deploy — one box, ~₹650/month
 
-Target: a 2 vCPU / 4 GB VPS (Hetzner CX22 ≈ €3.8, DigitalOcean Bangalore $6) running `docker-compose.prod.yml`
-(app + Postgres + Redis + Caddy auto-HTTPS + nightly pg_dump), with **Cloudflare free** in front and **R2** for media.
+One VPS runs everything via `docker-compose.prod.yml`:
 
-## 0. Accounts (all free to open)
+| Service | What it is |
+|---|---|
+| `app` | the engine — API, admin, legal pages, payments, the sweep (:3000) |
+| `web` | the public site people see (:3001) |
+| `db` / `redis` | Postgres 17, Redis |
+| `caddy` | TLS + routing (:80/:443) |
+| `backup` | nightly `pg_dump` to `./backups` |
+| `offsite` | ships dumps **and media** to Google Drive |
 
-- Domain on Cloudflare Registrar (~₹1,000/yr). Keep DNS on Cloudflare, proxy ON (orange cloud).
-- Cloudflare R2: create bucket `kadi-media`, create an API token (Object Read & Write) → `S3_ACCESS_KEY_ID/SECRET`, endpoint `https://<accountid>.r2.cloudflarestorage.com`.
-- Cashfree (default gateway): account + KYC (sandbox keys work meanwhile). Dashboard → Developers → API Keys → `CASHFREE_APP_ID` / `CASHFREE_SECRET_KEY`. Webhook → `https://<domain>/api/webhooks/cashfree`, events `PAYMENT_SUCCESS_WEBHOOK` + `PAYMENT_FAILED_WEBHOOK`. The webhook is signed with the same secret key, so there is no separate webhook secret.
-- Razorpay (drop-in alternative): webhook → `https://<domain>/api/webhooks/razorpay`, events `payment.captured`, `payment.failed`, secret → `RAZORPAY_WEBHOOK_SECRET`.
-- VPS: Ubuntu 24.04, `apt install docker.io docker-compose-v2 git`.
+**One domain, two apps.** Caddy sends `/api`, `/admin` and the legal pages to `app`;
+everything else to `web`. The frontend's Next rewrites do the same thing in dev.
+
+Sized for **2 GB RAM**: Utho Micro (Mumbai, ~₹649/mo, UPI) or AWS Lightsail Mumbai
+($12/mo). Cloudflare free sits in front.
+
+## 0. Accounts
+
+- **Domain** — any registrar taking UPI (Hostinger, GoDaddy India, BigRock).
+  Cloudflare Registrar sells `.com` at cost but does **not** sell `.in`.
+  Either way, point the nameservers at Cloudflare.
+- **Cloudflare (free, no card)** — DNS, HTTPS, caching, and Email Routing so
+  `hello@yourdomain` forwards to your Gmail.
+- **Cashfree** — account + KYC. Sandbox keys work until it clears; set
+  `CASHFREE_ENV=production` the day it does, or checkout takes no money.
+  Webhook → `https://<domain>/api/webhooks/cashfree`,
+  events `PAYMENT_SUCCESS_WEBHOOK` + `PAYMENT_FAILED_WEBHOOK`. It is signed with
+  the same secret key — there is no separate webhook secret.
+- **Google Drive** — offsite backups. Your existing Gmail, 15 GB free, no card.
+- **Cloudflare R2** — optional, needs a card. Without it media lives on the
+  server disk, which is fine (see §3).
+- **VPS** — Ubuntu 24.04, then `apt install -y docker.io docker-compose-v2 git`.
 
 ## 1. Configure
 
@@ -18,63 +41,97 @@ git clone <repo> kadi && cd kadi
 cp .env.example .env
 ```
 
-Edit `.env` — the ones that matter:
+Fill `.env`. The ones that matter:
 
 ```
-DOMAIN=kadi.example.com
-NEXT_PUBLIC_APP_URL=https://kadi.example.com
-APP_SECRET=<openssl rand -hex 32>
-ADMIN_PASSWORD=<long>
-CRON_SECRET=<openssl rand -hex 16>
+DOMAIN=thelastnote.in
+SITE_URL=https://thelastnote.in
 POSTGRES_PASSWORD=<long>
-STORAGE_DRIVER=s3
-S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
-S3_BUCKET=kadi-media
-S3_ACCESS_KEY_ID=...  S3_SECRET_ACCESS_KEY=...
-PAYMENT_GATEWAY=cashfree   # cashfree | razorpay | mock (mock shows TEST MODE everywhere)
-CASHFREE_APP_ID=... CASHFREE_SECRET_KEY=... CASHFREE_ENV=production
-# or, for Razorpay:
-# RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... RAZORPAY_WEBHOOK_SECRET=...
-SITE_URL=https://${DOMAIN}   # payment return URLs; same origin as the API in production
+APP_SECRET=<openssl rand -hex 32>     # signs cookies + media URLs
+ADMIN_PASSWORD=<long>                  # not "admin"
+CRON_SECRET=<openssl rand -hex 16>
+PAYMENT_GATEWAY=cashfree
+CASHFREE_APP_ID=...  CASHFREE_SECRET_KEY=...  CASHFREE_ENV=sandbox
+STORAGE_DRIVER=local                   # or s3 + the S3_* block for R2
 VAPID_PUBLIC_KEY=... VAPID_PRIVATE_KEY=... VAPID_SUBJECT=mailto:you@domain   # pnpm vapid
-SEED_ON_EMPTY=false
-LEGAL_ENTITY=... GRIEVANCE_NAME=... GRIEVANCE_EMAIL=...   # legal pages
+SEED_ON_EMPTY=false                    # never auto-seed a live database
+LEGAL_ENTITY=... GRIEVANCE_NAME=... GRIEVANCE_EMAIL=... GRIEVANCE_ADDRESS=...
+NEXT_PUBLIC_WHATSAPP_URL=...  NEXT_PUBLIC_INSTAGRAM_URL=...  NEXT_PUBLIC_CONTACT_EMAIL=...
 ```
 
-`DATABASE_URL` and `REDIS_URL` are set by the compose file.
+`DATABASE_URL`, `REDIS_URL` and `NEXT_PUBLIC_APP_URL` are set by compose.
+
+> **`NEXT_PUBLIC_*` are compiled into the browser bundle at image build time.**
+> Changing a social link needs `up -d --build web`, not a restart.
 
 ## 2. Start
 
+On a 2 GB box, build the two apps **one at a time** — building both at once
+runs out of memory. Give it swap first:
+
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml logs -f app     # wait for "[kadi] ready"
+fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+
+docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml build web
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml logs -f app   # wait for "[kadi] ready"
 curl -s https://$DOMAIN/api/health
-docker compose -f docker-compose.prod.yml exec app node -e "console.log('ok')"
 ```
 
-Migrations run at boot. Create the chains in `/admin` (or `pnpm db:seed --no-demo` locally against the prod `DATABASE_URL`).
+Migrations run at boot. Create the chains in `/admin`.
 
-## 3. Cloudflare settings (the read-spike insurance)
+## 3. Media
 
-- SSL/TLS: Full (strict). Caddy holds a real cert.
-- Caching → Cache Rules: **cache everything** for `/`, `/c/*` (not `/c/*/reveal*`), `/api/stats/*`, `/_next/static/*`. The ISR pages already send `s-maxage=5, stale-while-revalidate`, so "respect origin" works for them; for the OG image routes (`/c/*/opengraph-image`, rendered per request) set Edge TTL **override → 5 minutes**. Bypass cache for `/api/*` except stats, `/l/*`, `/me`, `/admin*`, `/c/*/reveal*`.
-- Security: Bot Fight Mode on; a rate-limiting rule on `/api/pay` (e.g. 30 req/min per IP) on top of the app's own limits.
-- Network: enable "IP geolocation" so `cf-ipcity` arrives (that's where the city comes from).
+`STORAGE_DRIVER=local` keeps photos and voice notes in the `media` Docker
+volume, which **survives redeploys** — only the disk dying loses them, which is
+what `offsite` covers. Switch to `s3` only once the `S3_*` values are filled.
 
-## 4. Operations
+## 4. Offsite backups — do this before launch
+
+`backup` writes nightly dumps to `./backups` **on the same disk as the database**.
+On a single cheap VPS, that disk is the likeliest way to lose everything, so
+`offsite` copies dumps and media to Google Drive. Set it up once:
+
+```bash
+docker run --rm -it -v $PWD/rclone:/config/rclone rclone/rclone config
+# n) new remote -> name it "gdrive" -> Google Drive -> accept defaults
+# it prints a URL: open it on your laptop, approve, paste the token back
+```
+
+That writes `./rclone/rclone.conf` (gitignored — it holds a Google token).
+Set `OFFSITE_REMOTE=gdrive` in `.env`. Until the file exists the container just
+idles and says so in the logs. Verify:
+
+```bash
+docker compose -f docker-compose.prod.yml logs offsite   # "offsite sync done"
+```
+
+## 5. Cloudflare
+
+- **SSL/TLS: Full (strict).** Any other mode gives an infinite redirect loop.
+- **Network → IP geolocation: on.** That is where the city on each note comes from
+  (`cf-ipcity`), and `cf-connecting-ip` is what the rate limiter counts.
+- **Cache Rules:** cache `/`, `/c/*` (not `/c/*/reveal*`), `/_next/static/*`.
+  Bypass `/api/*`, `/l/*`, `/me`, `/admin*`, `/c/*/reveal*`.
+- **Bot Fight Mode on**, plus a rate-limit rule on `/api/pay` (~30/min per IP).
+
+## 6. Operations
 
 | Task | How |
 |---|---|
-| Logs | `docker compose -f docker-compose.prod.yml logs -f app` |
-| Update | `git pull && docker compose -f docker-compose.prod.yml up -d --build` (zero-downtime not guaranteed; ~20 s) |
-| Backups | `./backups/kadi-YYYY-MM-DD.sql.gz` nightly; ship the folder to R2 with `rclone` in cron |
-| Sweep / reconcile | runs in-process every 5 min; also `curl -H "Authorization: Bearer $CRON_SECRET" https://$DOMAIN/api/cron/sweep` |
-| Refunds | manual, from the Razorpay dashboard; `/admin/payments` shows stuck orders |
+| Logs | `docker compose -f docker-compose.prod.yml logs -f app web` |
+| Update | `git pull`, then build app and web separately, then `up -d` (~20 s down) |
+| Backups | nightly in `./backups`, copied to Drive by `offsite` |
+| Restore | `gunzip < backups/kadi-YYYY-MM-DD.sql.gz \| docker compose -f docker-compose.prod.yml exec -T db psql -U kadi kadi` |
+| Sweep | runs in-process every 5 min; also `curl -H "Authorization: Bearer $CRON_SECRET" https://$DOMAIN/api/cron/sweep` |
+| Refunds | manual, from the **Cashfree** dashboard; `/admin/payments` shows stuck orders |
 | Reports | `/admin/reports` — act within 72 h (IT Rules) |
-| Resize | stop, resize the droplet/server, start — nothing else changes |
 
 ## When one box isn't enough
 
-Reads never reach the box (Cloudflare). Writes are throttled by payments (~20/s is trivial). If you outgrow it anyway:
-move Postgres to a managed instance (Neon/Supabase/DO), point `DATABASE_URL` at it, run two app containers behind Caddy.
-Nothing in the code assumes a single instance except the ISR file cache (add the Redis cache handler then).
+Reads mostly never reach the box (Cloudflare). Writes are gated by payments.
+If you outgrow it: move Postgres to a managed instance, point `DATABASE_URL` at
+it, and run more `web` containers behind Caddy. Nothing assumes a single
+instance except the ISR file cache — add the Redis cache handler then.

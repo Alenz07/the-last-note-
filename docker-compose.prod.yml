@@ -77,6 +77,33 @@ services:
         find /backups -name '*.sql.gz' -mtime +14 -delete;
         sleep 86400; done"
     depends_on: [db]
+  # Ships the nightly dump AND the media folder off this machine. Without it,
+  # the database and its only backups die together with the disk - and on a
+  # single cheap VPS that is the likeliest way to lose everything.
+  # Configure once: rclone config -> Google Drive (free, no card), then put the
+  # generated rclone.conf in ./rclone/. Until then this container idles quietly.
+  offsite:
+    image: rclone/rclone:latest
+    restart: unless-stopped
+    volumes:
+      - ./rclone:/config:ro
+      - ./backups:/backups:ro
+      - media:/media:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        while true; do
+          if [ -s /config/rclone.conf ]; then
+            rclone --config /config/rclone.conf copy /backups "${OFFSITE_REMOTE:-gdrive}:kadi/backups" --max-age 72h
+            rclone --config /config/rclone.conf sync /media "${OFFSITE_REMOTE:-gdrive}:kadi/media"
+            echo "[kadi] offsite sync done $(date -Iseconds)"
+          else
+            echo "[kadi] offsite backup not configured - put rclone.conf in ./rclone/"
+          fi
+          sleep 86400
+        done
+    depends_on: [backup]
 volumes:
   pgdata:
   media:
