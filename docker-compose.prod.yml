@@ -88,7 +88,9 @@ services:
     volumes:
       - ./rclone:/config:ro
       - ./backups:/backups:ro
-      - media:/media:ro
+      # NOT /media: the rclone image already has a /media dir, and Docker would
+      # seed the empty volume from it - root-owned junk the app cannot write to.
+      - media:/data/media:ro
     entrypoint:
       - /bin/sh
       - -c
@@ -96,7 +98,7 @@ services:
         while true; do
           if [ -s /config/rclone.conf ]; then
             rclone --config /config/rclone.conf copy /backups "${OFFSITE_REMOTE:-gdrive}:kadi/backups" --max-age 72h
-            rclone --config /config/rclone.conf sync /media "${OFFSITE_REMOTE:-gdrive}:kadi/media"
+            rclone --config /config/rclone.conf sync /data/media "${OFFSITE_REMOTE:-gdrive}:kadi/media"
             echo "[kadi] offsite sync done $(date -Iseconds)"
           else
             echo "[kadi] offsite backup not configured - put rclone.conf in ./rclone/"
