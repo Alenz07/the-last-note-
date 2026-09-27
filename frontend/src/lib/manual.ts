@@ -43,7 +43,7 @@ export const manual = {
       {
         n: '5',
         title: 'Leave yours',
-        body: 'You now have twenty minutes to write your own note. Between 120 and 1,000 characters, plus an optional voice note of up to 30 seconds and one optional photo. Nobody reads it until the next stranger pays.',
+        body: 'You now have twenty minutes to write your own note. Between 120 and 1,000 characters, plus an optional voice note of up to 30 seconds and one optional photo. Nobody reads it until the next stranger pays. Underneath the note there is a separate contact box, also optional — that is the one place a phone number, Instagram or email is allowed, and only the single person who pays to read your note ever sees it.',
       },
       {
         n: '6',
@@ -77,7 +77,7 @@ export const manual = {
         items: [
           {
             q: 'I paid but never wrote my note.',
-            a: 'Your slot passes unwritten once the ten minutes are up. The number stays yours forever and still appears in the chain, marked as passed. The chain’s numbering never breaks and nobody behind you is held up — the next reader simply gets the last note that was actually written. The ₹5 is not refunded, because the reveal was already delivered: you read someone’s note.',
+            a: 'Your slot passes unwritten once the twenty minutes are up. The number stays yours forever and still appears in the chain, marked as passed. The chain’s numbering never breaks and nobody behind you is held up — the next reader simply gets the last note that was actually written. The ₹5 is not refunded, because the reveal was already delivered: you read someone’s note.',
           },
           {
             q: 'I paid and closed the page before reading anything.',
@@ -98,19 +98,19 @@ export const manual = {
         ],
       },
       {
-        group: 'About your contact details',
+        group: 'Letting someone reach you',
         items: [
           {
-            q: 'I left my number, WhatsApp or handle in the contact field.',
-            a: 'It is shown only to the one person who pays to read your note. It is never published, never included when your text unseals publicly, and never shown to anyone else. If that person wants to reach you, they can. That is the only thing that field does.',
+            q: 'Can the person who reads my note reach me?',
+            a: 'Yes, if you choose to let them. There are two boxes and they have opposite rules: contact details are never allowed inside the note itself, and always allowed in the separate contact box underneath it. That box is optional, up to 80 characters — a WhatsApp number, an Instagram handle, an email. Only the one stranger who pays to read your note ever sees it. It is never published and never unsealed. Plenty of people use it: someone writes back to say the advice helped, or to ask how the story ended.',
           },
           {
-            q: 'I did not leave any contact.',
-            a: 'Then nobody can reach you, and nobody learns who you are. The reader still reads your note and still continues the chain. Leaving a contact is entirely optional and most people skip it.',
+            q: 'What if I leave the contact box empty?',
+            a: 'Nothing changes for your reader — they still read your note and still continue the chain. You simply stay unreachable, and nobody learns who you are. It is entirely your choice, and both choices are normal.',
           },
           {
-            q: 'I tried to put my number inside the note itself.',
-            a: 'It is blocked before the note is sealed. Phone numbers, links, email addresses, UPI IDs and social handles are not allowed in the text, because the text can later become public. The contact field exists precisely so you have a safe place to put them — it stays private.',
+            q: 'Why was my number blocked inside the note?',
+            a: 'Because the note itself can become public later. Once the chain moves fifty notes past yours, your text appears on the chain’s public page for anyone to read — so a number written into the text would end up in front of everyone, permanently. That is why numbers, links, emails, UPI IDs and handles are blocked in the text, and why the contact box exists instead. The box stays private to your one reader, whatever happens to the text.',
           },
         ],
       },
@@ -180,7 +180,7 @@ export const manual = {
       'Text: between 120 and 1,000 characters — roughly 20 to 170 words.',
       'Voice note: optional, up to 30 seconds.',
       'Photo: optional, one per note.',
-      'Contact: optional, up to 80 characters, private to your reader.',
+      'Contact: optional, up to 80 characters — the one place contact details are allowed. Seen only by the person who pays to read your note; never published.',
       'Time to write: twenty minutes from the moment you pay.',
     ],
     banned: [
