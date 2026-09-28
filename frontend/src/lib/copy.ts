@@ -47,6 +47,7 @@ export const pay = {
 
 export const launch = {
   eyebrow: 'Opening soon',
+  when: 'Friday 2 October · 12:01 AM',
   headline: 'The first note goes in on Friday.',
   body: 'Nobody has written yet. When the chain opens, someone will leave something — and whoever comes next pays five rupees to read it.',
   cta: 'Join the WhatsApp channel',

@@ -81,6 +81,7 @@ export default async function Landing() {
               <div className="mt-9">
                 <p className="eyebrow">{launchCopy.eyebrow}</p>
                 <LaunchCountdown target={SITE.launchAt} className="mt-4" />
+                <p className="serif mt-5 text-[1.35rem] leading-tight text-ink">{launchCopy.when}</p>
                 <p className="mt-7 max-w-[44ch] text-[15px] leading-relaxed text-ink-muted">{launchCopy.body}</p>
                 {SOCIAL.whatsapp ? (
                   <a href={SOCIAL.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-gold mt-6">
