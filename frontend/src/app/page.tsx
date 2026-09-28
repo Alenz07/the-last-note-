@@ -31,7 +31,9 @@ export default async function Landing() {
   const chains = await getChains();
   const teasers = await Promise.all(chains.map((c) => getTeaser(c.slug)));
   const featured = teasers.find((t) => t?.sealed) ?? teasers[0] ?? null;
-  const totalLinks = chains.reduce((n, c) => n + c.stats.length, 0);
+  // submitted, not length: a slot that was paid for but never written into is
+  // not a note, and counting it would advertise silence as content.
+  const totalNotes = chains.reduce((n, c) => n + c.stats.submitted, 0);
   const price = featured ? rupees(featured.chain.pricePaise) : '₹5';
   // Always choose a chain first — the hero never drops you into one.
   const enterHref = '/chains';
@@ -111,9 +113,9 @@ export default async function Landing() {
         </section>
       </ArchScene>
 
-      {totalLinks > 0 ? (
+      {!preLaunch && totalNotes > 0 ? (
         <p className="mt-2 text-center text-sm text-ink-muted num">
-          {formatCount(totalLinks)} notes left by strangers — and counting.
+          {formatCount(totalNotes)} notes left by strangers — and counting.
         </p>
       ) : null}
 
