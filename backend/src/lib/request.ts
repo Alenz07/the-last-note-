@@ -24,7 +24,7 @@ export function setDeviceCookie(res: NextResponse, id: string): void {
   res.cookies.set(LIMITS.deviceCookie, id, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: env.isProd,
+    secure: env.cookieSecure,
     path: '/',
     maxAge: LIMITS.deviceCookieMaxAge,
   });

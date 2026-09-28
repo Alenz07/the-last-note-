@@ -4,6 +4,7 @@
  * requires APP_SECRET, ADMIN_PASSWORD and a real DATABASE_URL.
  */
 const isProd = process.env.NODE_ENV === 'production';
+const siteUrl = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001').replace(/\/$/, '');
 
 function bool(v: string | undefined, dflt: boolean): boolean {
   if (v === undefined || v === '') return dflt;
@@ -20,7 +21,14 @@ export const env = {
    * (Caddy fronts both), but a different port in dev where the frontend runs
    * separately. Payment return URLs must point here, not at the API.
    */
-  siteUrl: (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001').replace(/\/$/, ''),
+  siteUrl,
+  /**
+   * Browsers silently DISCARD cookies marked Secure when they arrive over
+   * plain HTTP - which logs everyone straight back out. Follow the scheme we
+   * are actually served on, not NODE_ENV: a production build on an HTTP-only
+   * host still needs usable cookies, and this flips itself the day TLS lands.
+   */
+  cookieSecure: siteUrl.startsWith('https://'),
   appSecret: process.env.APP_SECRET || 'dev-only-change-me-dev-only-change-me',
   adminPassword: process.env.ADMIN_PASSWORD || 'admin',
   cronSecret: process.env.CRON_SECRET || 'dev-cron',

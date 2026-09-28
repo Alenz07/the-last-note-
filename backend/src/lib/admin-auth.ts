@@ -14,7 +14,7 @@ export function adminCookieValue(): string {
 }
 
 export function adminCookieOptions() {
-  return { httpOnly: true, sameSite: 'lax' as const, secure: env.isProd, path: '/', maxAge: TTL };
+  return { httpOnly: true, sameSite: 'lax' as const, secure: env.cookieSecure, path: '/', maxAge: TTL };
 }
 
 export async function isAdmin(): Promise<boolean> {
