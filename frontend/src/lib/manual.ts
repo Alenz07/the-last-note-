@@ -12,7 +12,7 @@ export const manual = {
   title: 'User manual',
   subtitle: SITE.tagline,
   intro:
-    'A chain of notes left by strangers. You pay ₹5 to read what the last person left, then you leave yours for the next one. No accounts, no names, no way back.',
+    'A chain of notes left by strangers. You pay Rs 5 to read what the last person left, then you leave yours for the next one. No accounts, no names, no way back.',
   version: 'Version 1 · September 2026',
 
   /* ---------------------------------------------------------------- basics */
@@ -32,7 +32,7 @@ export const manual = {
       },
       {
         n: '3',
-        title: 'Pay ₹5',
+        title: 'Pay Rs 5',
         body: 'One payment buys two things: one reveal, and one numbered slot of your own. Pay by UPI, card, netbanking or wallet. Nothing is stored about you beyond the payment reference.',
       },
       {
@@ -48,13 +48,13 @@ export const manual = {
       {
         n: '6',
         title: 'Get your number and share it',
-        body: 'You become a numbered link in the chain — "you are note #4,372". Share that number with anyone; whoever opens your link pays ₹5 to read what you wrote, and you are told the moment it happens.',
+        body: 'You become a numbered link in the chain — "you are note #4,372". Share that number with anyone; whoever opens your link pays Rs 5 to read what you wrote, and you are told the moment it happens.',
       },
     ],
   },
 
   whatYouGet: {
-    heading: 'What ₹5 buys',
+    heading: 'What Rs 5 buys',
     lede: 'Exactly two things, delivered the moment the payment clears.',
     gets: [
       'One reveal — the complete note left before yours: the text, the voice note, the photo, and the writer’s contact if they shared one.',
@@ -63,7 +63,7 @@ export const manual = {
     notGets: [
       'It does not buy the whole chain. One payment, one note.',
       'It does not buy the right to read your note again later for free — but your own note stays on your link page forever.',
-      'No money is ever paid out to users. ₹5 is a platform fee, not a deposit, prize or investment.',
+      'No money is ever paid out to users. Rs 5 is a platform fee, not a deposit, prize or investment.',
     ],
   },
 
@@ -77,7 +77,7 @@ export const manual = {
         items: [
           {
             q: 'I paid but never wrote my note.',
-            a: 'Your slot passes unwritten once the twenty minutes are up. The number stays yours forever and still appears in the chain, marked as passed. The chain’s numbering never breaks and nobody behind you is held up — the next reader simply gets the last note that was actually written. The ₹5 is not refunded, because the reveal was already delivered: you read someone’s note.',
+            a: 'Your slot passes unwritten once the twenty minutes are up. The number stays yours forever and still appears in the chain, marked as passed. The chain’s numbering never breaks and nobody behind you is held up — the next reader simply gets the last note that was actually written. The Rs 5 is not refunded, because the reveal was already delivered: you read someone’s note.',
           },
           {
             q: 'I paid and closed the page before reading anything.',
@@ -153,11 +153,11 @@ export const manual = {
         items: [
           {
             q: 'I am the first person in a chain.',
-            a: 'There is nothing to read yet, and you are told so before you pay. You still pay ₹5, because it buys your slot — you write the opening line that the next stranger will pay to read.',
+            a: 'There is nothing to read yet, and you are told so before you pay. You still pay Rs 5, because it buys your slot — you write the opening line that the next stranger will pay to read.',
           },
           {
             q: 'Someone shared their note link with me.',
-            a: 'You will read that specific note rather than whichever one happens to be latest. If that note has since been hidden or removed, or it turns out to be your own, you get the most recent note instead so your ₹5 always buys a real reveal.',
+            a: 'You will read that specific note rather than whichever one happens to be latest. If that note has since been hidden or removed, or it turns out to be your own, you get the most recent note instead so your Rs 5 always buys a real reveal.',
           },
           {
             q: 'The person before me left nothing.',
@@ -202,7 +202,7 @@ export const manual = {
     sections: [
       {
         title: 'What you are buying',
-        body: '₹5 is a platform fee for one reveal and one slot. That is the entire service. No money is ever paid out to users, and nothing here is a prize, reward, deposit or investment. This is not a prize chit or money circulation scheme under the Prize Chits and Money Circulation Schemes (Banning) Act, 1978.',
+        body: 'Rs 5 is a platform fee for one reveal and one slot. That is the entire service. No money is ever paid out to users, and nothing here is a prize, reward, deposit or investment. This is not a prize chit or money circulation scheme under the Prize Chits and Money Circulation Schemes (Banning) Act, 1978.',
       },
       {
         title: 'Who can use it',
@@ -214,7 +214,7 @@ export const manual = {
       },
       {
         title: 'Refunds',
-        body: 'No refunds, with two exceptions: you paid and no reveal was ever delivered, or you were charged twice for one slot. Not liking the note you read, or missing your ten-minute window, is not a refund — the reveal was delivered either way. Qualifying refunds go back to the same account within 5–7 working days.',
+        body: 'No refunds, with two exceptions: you paid and no reveal was ever delivered, or you were charged twice for one slot. Not liking the note you read, or missing your twenty-minute window, is not a refund — the reveal was delivered either way. Qualifying refunds go back to the same account within 5–7 working days.',
       },
       {
         title: 'Privacy',
