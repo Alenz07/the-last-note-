@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { getChains, getTeaser } from '@/lib/api';
 import { formatCount, formatPosition, rupees, timeAgo } from '@/lib/format';
-import { SITE } from '@/lib/site';
+import { SITE, SOCIAL } from '@/lib/site';
+import { launch as launchCopy } from '@/lib/copy';
+import { LaunchCountdown } from '@/components/LaunchCountdown';
 import type { ChainSummary, SealedMeta } from '@/lib/types';
 import { ArchScene } from '@/components/ArchScene';
-import { BoltIcon, ChainGlyph, ChainIcon, DownloadIcon, EyeIcon, LockIcon, MaskIcon, PersonIcon, QuillIcon, ShieldIcon } from '@/components/Icons';
+import { BoltIcon, ChainGlyph, ChainIcon, DownloadIcon, EyeIcon, LockIcon, MaskIcon, PersonIcon, QuillIcon, ShieldIcon, WhatsAppIcon } from '@/components/Icons';
 import { Redacted } from '@/components/Redacted';
 import { ContactCard } from '@/components/Social';
 
@@ -33,6 +35,11 @@ export default async function Landing() {
   const price = featured ? rupees(featured.chain.pricePaise) : '₹5';
   // Always choose a chain first — the hero never drops you into one.
   const enterHref = '/chains';
+  // Before launch the chains are paused server-side, so the pay button would
+  // only lead to an error. Show the countdown and the channel instead.
+  // Clearing NEXT_PUBLIC_LAUNCH_AT and rebuilding is what opens the site - the
+  // clock itself lives in the client component, since this page is ISR-cached.
+  const preLaunch = Boolean(SITE.launchAt);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-5 pb-14 sm:px-8">
@@ -49,9 +56,15 @@ export default async function Landing() {
           <a href="/manual" className="hover:text-ink">How it works</a>
           <a href="#why" className="hover:text-ink">About</a>
         </nav>
-        <Link href="/chains" className="btn btn-gold !min-h-10 !px-4 !text-[0.78rem]">
-          <QuillIcon size={14} /> Write a note
-        </Link>
+        {preLaunch && SOCIAL.whatsapp ? (
+          <a href={SOCIAL.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-gold !min-h-10 !px-4 !text-[0.78rem]">
+            <WhatsAppIcon size={14} /> Join the channel
+          </a>
+        ) : (
+          <Link href="/chains" className="btn btn-gold !min-h-10 !px-4 !text-[0.78rem]">
+            <QuillIcon size={14} /> Write a note
+          </Link>
+        )}
       </header>
 
       {/* ---------------- hero ---------------- */}
@@ -64,11 +77,25 @@ export default async function Landing() {
                 <p key={l}>{l}</p>
               ))}
             </div>
-            <div className="mt-9">
-              <Link href={enterHref} className="btn btn-gold">
-                <LockIcon /> Reveal the next note — {price}
-              </Link>
-            </div>
+            {preLaunch ? (
+              <div className="mt-9">
+                <p className="eyebrow">{launchCopy.eyebrow}</p>
+                <LaunchCountdown target={SITE.launchAt} className="mt-4" />
+                <p className="mt-7 max-w-[44ch] text-[15px] leading-relaxed text-ink-muted">{launchCopy.body}</p>
+                {SOCIAL.whatsapp ? (
+                  <a href={SOCIAL.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-gold mt-6">
+                    <WhatsAppIcon size={15} /> {launchCopy.cta}
+                  </a>
+                ) : null}
+                <p className="mt-3 max-w-[40ch] text-xs leading-relaxed text-ink-faint">{launchCopy.note}</p>
+              </div>
+            ) : (
+              <div className="mt-9">
+                <Link href={enterHref} className="btn btn-gold">
+                  <LockIcon /> Reveal the next note — {price}
+                </Link>
+              </div>
+            )}
             <p className="mt-7 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-ink-faint">
               {BADGES.map((b, i) => (
                 <span key={b} className="flex items-center gap-3">

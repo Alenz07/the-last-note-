@@ -6,6 +6,8 @@ export const SITE = {
   name: 'dernote',
   tagline: 'A stranger’s words. Your moment. Their tomorrow.',
   description: 'Someone left something here. You don’t know who. ₹5 to read it — then you leave yours for the next stranger.',
+  /** ISO timestamp. While it is in the future the site shows a countdown and takes no money. */
+  launchAt: process.env.NEXT_PUBLIC_LAUNCH_AT || '',
 } as const;
 
 /**

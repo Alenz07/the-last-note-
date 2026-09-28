@@ -45,6 +45,16 @@ export const pay = {
   back: 'Back to the chains',
 } as const;
 
+export const launch = {
+  eyebrow: 'Opening soon',
+  headline: 'The first note goes in on Friday.',
+  body: 'Nobody has written yet. When the chain opens, someone will leave something — and whoever comes next pays five rupees to read it.',
+  cta: 'Join the WhatsApp channel',
+  note: 'We post there the moment the first note is live. Nobody sees your number.',
+  fallback: 'Follow along until it opens.',
+  open: 'The chain is open.',
+} as const;
+
 export const chains = {
   title: 'Choose a chain',
   sub: 'Every chain is a different kind of note. Pick one, and you read whatever the last stranger left in it.',

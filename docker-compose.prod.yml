@@ -30,6 +30,9 @@ services:
         NEXT_PUBLIC_WHATSAPP_URL: ${NEXT_PUBLIC_WHATSAPP_URL:-}
         NEXT_PUBLIC_INSTAGRAM_URL: ${NEXT_PUBLIC_INSTAGRAM_URL:-}
         NEXT_PUBLIC_CONTACT_EMAIL: ${NEXT_PUBLIC_CONTACT_EMAIL:-}
+        # While set, the site shows a countdown and sells nothing. Clearing it
+        # and rebuilding is the launch switch.
+        NEXT_PUBLIC_LAUNCH_AT: ${NEXT_PUBLIC_LAUNCH_AT:-}
     restart: unless-stopped
     environment:
       # Only used by routes Caddy does not split off; server-side calls go direct.
