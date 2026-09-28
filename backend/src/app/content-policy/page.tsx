@@ -2,6 +2,14 @@ import type { Metadata } from 'next';
 import { LIMITS } from '@/lib/env';
 import { LegalPage, LegalSection } from '@/components/ui/LegalPage';
 
+/**
+ * Rendered per request, not prerendered: the legal details come from the
+ * environment, and baking them in at build time means a code rebuild every
+ * time an address or a grievance officer changes. Cloudflare caches these.
+ */
+export const dynamic = 'force-dynamic';
+
+
 export const metadata: Metadata = { title: 'Content policy' };
 
 const UPDATED = '2026-08-23';
