@@ -3,6 +3,13 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Single Docker image deploy (node .next/standalone/server.js)
   output: 'standalone',
+  /**
+   * Both apps serve their JS and CSS under /_next/. Behind one domain those
+   * paths collide: Caddy sends /_next/* to the site, which does not have the
+   * engine's chunks, so /admin and every legal page render unstyled.
+   * The engine's assets get a prefix; Caddy strips it again before proxying.
+   */
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/engine' : undefined,
   // Node-native packages stay outside the server bundle
   serverExternalPackages: ['@electric-sql/pglite', 'postgres', 'ioredis', 'web-push'],
   poweredByHeader: false,

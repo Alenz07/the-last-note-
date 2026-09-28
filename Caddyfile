@@ -8,19 +8,26 @@
 		-Server
 	}
 
-	# The engine owns the API, the admin panel and the legal pages. Everything
-	# else - landing, chains, teasers, reveal, the unsealed archive, the manual,
-	# robots and sitemap - is the public site.
-	#
-	# Split here rather than proxied through Next's rewrites so payments,
-	# webhooks and media uploads take one hop instead of two, and so the site
-	# keeps serving pages when the engine is restarting.
-	@engine path /api/* /admin /admin/* /terms /privacy /refunds /content-policy /grievance
-	reverse_proxy @engine app:3000 {
-		header_up X-Real-IP {remote_host}
+	# The engine's own JS/CSS, prefixed to avoid colliding with the site's.
+	# handle_path strips /engine before proxying, so the app sees /_next/...
+	handle_path /engine/* {
+		reverse_proxy app:3000 {
+			header_up X-Real-IP {remote_host}
+		}
 	}
 
-	reverse_proxy web:3001 {
-		header_up X-Real-IP {remote_host}
+	# The engine owns the API, the admin panel and the legal pages.
+	@engine path /api/* /admin /admin/* /terms /privacy /refunds /content-policy /grievance
+	handle @engine {
+		reverse_proxy app:3000 {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# Everything else is the public site.
+	handle {
+		reverse_proxy web:3001 {
+			header_up X-Real-IP {remote_host}
+		}
 	}
 }
