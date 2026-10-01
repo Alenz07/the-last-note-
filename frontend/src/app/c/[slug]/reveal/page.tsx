@@ -6,6 +6,7 @@ import { Composer, EventBeacon, PayButton, ReportButton } from '@/components/flo
 import { free as freeCopy } from '@/lib/copy';
 import { FREE } from '@/lib/free';
 import { Page, SiteFooter, SiteHeader } from '@/components/Chrome';
+import { FollowCard } from '@/components/Social';
 import { LockIcon, QuillIcon } from '@/components/Icons';
 import { RevealedNote } from '@/components/NoteCard';
 
@@ -96,6 +97,13 @@ export default async function RevealPage({ searchParams }: PageProps<'/c/[slug]/
           {copy.lockNote}
         </p>
       </section>
+
+      {/* Below the composer, never above it. Someone mid-write has twenty
+          minutes on a clock, and a button that opens WhatsApp takes them out
+          of the browser entirely — the ones who do not come back leave a
+          passed slot where a note should have been. Down here it is only
+          reached by people who have finished, or who were never writing. */}
+      <FollowCard className="mt-12" />
 
       <SiteFooter />
       <EventBeacon name="reveal_view" chainSlug={chain.slug} />
