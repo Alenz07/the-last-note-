@@ -81,11 +81,11 @@ export const manual = {
           },
           {
             q: 'I paid and closed the page before reading anything.',
-            a: 'Nothing is lost. The payment is confirmed by the gateway directly to our server, independently of your browser, so your slot is created whether or not the tab survived. Reopen the site and go to "Your links" on the same device, or use "Lost a link?" and paste your payment ID. Your reveal is waiting.',
+            a: 'Nothing is lost. The payment is confirmed by the gateway directly to our server, independently of your browser, so your slot is created whether or not the tab survived. Reopen the site and go to "Your notes" on the same device, or use "Lost a note?" and paste your payment ID. Your reveal is waiting.',
           },
           {
             q: 'Money left my account but I got nothing at all.',
-            a: 'Every few minutes the system re-checks any payment that never completed and finishes the job automatically. Almost all of these resolve on their own within minutes. If 24 hours pass and "Lost a link?" still cannot find your slot from the payment ID, that is a failed delivery and we refund the full amount — write to the grievance contact with the payment ID.',
+            a: 'Every few minutes the system re-checks any payment that never completed and finishes the job automatically. Almost all of these resolve on their own within minutes. If 24 hours pass and "Lost a note?" still cannot find your slot from the payment ID, that is a failed delivery and we refund the full amount — write to the grievance contact with the payment ID.',
           },
           {
             q: 'My payment failed.',
@@ -119,7 +119,7 @@ export const manual = {
         items: [
           {
             q: 'Nobody has read my note yet.',
-            a: 'It stays sealed. The next person who pays in that chain will read it. Your link page shows "unread" until then, and you can turn on a notification so you know the moment it is opened.',
+            a: 'It stays sealed. The next person who pays in that chain will read it. Your note’s page shows “unread” until then, and you can turn on a notification so you know the moment it is opened.',
           },
           {
             q: 'Someone reports my note.',
@@ -139,8 +139,12 @@ export const manual = {
         group: 'About getting back in',
         items: [
           {
+            q: 'I read the note, then closed the page before writing mine.',
+            a: 'Your slot is still open and the twenty minutes are still running. Open "Your notes" on the same device — it is listed as Unwritten, and tapping it takes you straight back to the page where you write. If the cookie is gone, use "Lost a note?" with your payment ID instead. If the twenty minutes run out before you get back, the slot passes unwritten: the number stays yours in the chain, marked as passed.',
+          },
+          {
             q: 'I cleared my cookies, or I am on a different phone.',
-            a: '"Your links" works off an anonymous cookie that lasts a year, so clearing it or switching devices empties that list. Nothing is lost, though: each note has its own secret link page. Save or bookmark that link when you get it. If you did not, use "Lost a link?" and paste the payment ID from your bank or UPI app.',
+            a: '"Your notes" works off an anonymous cookie that lasts a year, so clearing it or switching devices empties that list. Nothing is lost, though: each note has its own secret link page. Save or bookmark that link when you get it. If you did not, use "Lost a note?" and paste the payment ID from your bank or UPI app.',
           },
           {
             q: 'Can I log in instead?',
