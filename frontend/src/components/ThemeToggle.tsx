@@ -1,7 +1,7 @@
 'use client';
 
 const KEY = 'dernote-theme';
-const GROUND = { dark: '#090a0c', light: '#f8f4f3' } as const;
+const GROUND = { dark: '#090a0b', light: '#f8f4f3' } as const;
 
 /**
  * Dark is the default and stays that way — this only records an explicit

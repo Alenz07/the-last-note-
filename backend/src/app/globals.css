@@ -7,17 +7,17 @@
    lives in git: commit "Checkpoint before frontend reset".
    ------------------------------------------------------------------ */
 @theme {
-  --color-bg: #090a0c;
-  --color-surface: #14110d;
+  --color-bg: #090a0b;
+  --color-surface: #121214;
   --color-surface-2: #1c1813;
-  --color-line: #2b2721;
+  --color-line: #292621;
   --color-line-gold: #6f5a3a;
-  --color-ink: #f2ede3;
-  --color-ink-muted: #a89e8b;
-  --color-ink-faint: #6b6353;
-  --color-accent: #c9a15a;
-  --color-accent-strong: #d8b978;
-  --color-accent-ink: #221a0b;
+  --color-ink: #f3eee5;
+  --color-ink-muted: #b8b0a4;
+  --color-ink-faint: #756d62;
+  --color-accent: #d2a85d;
+  --color-accent-strong: #dcb36a;
+  --color-accent-ink: #17130d;
   --color-danger: #d9635f;
 
   --color-tint-wine: #7a1f3d;

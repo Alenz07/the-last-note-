@@ -1,22 +1,26 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   THE LAST NOTE — candlelit charcoal + antique gold.
-   bg #090A0C · ink #F2EDE3 · gold #C9A15A · gold-line #6F5A3A
+   THE LAST NOTE — candlelit charcoal + antique gold. The signature.
+   bg #090A0B · ink #F3EEE5 · gold #C9A15A · button #D2A85D
    ------------------------------------------------------------------ */
 @theme {
-  --color-bg: #090a0c;
+  --color-bg: #090a0b;
   --color-surface: #101013;
   --color-surface-2: #16151a;
-  --color-card: #121114;
-  --color-line: #26231d;
+  --color-card: #121214;
+  --color-line: #292621;
   --color-line-gold: #6f5a3a;
-  --color-ink: #f2ede3;
-  --color-ink-muted: #a79d8a;
-  --color-ink-faint: #6b6353;
+  --color-ink: #f3eee5;
+  --color-ink-muted: #b8b0a4;
+  --color-ink-faint: #756d62;
+  /* Two golds, deliberately: the accent carries text, rules and icon rings;
+     the button is a touch brighter so a filled block does not read heavier
+     than the hairline next to it. */
   --color-gold: #c9a15a;
-  --color-gold-strong: #dbb877;
-  --color-gold-ink: #1f1706;
+  --color-gold-button: #d2a85d;
+  --color-gold-strong: #dcb36a;
+  --color-gold-ink: #17130d;
   --color-danger: #d9635f;
 
   --font-serif: var(--font-instrument-serif), "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -78,14 +82,14 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 .btn:active { transform: translateY(1px); }
-.btn-gold { background: var(--color-gold); color: var(--color-gold-ink); }
+.btn-gold { background: var(--color-gold-button); color: var(--color-gold-ink); }
 .btn-gold:hover { background: var(--color-gold-strong); }
 .btn-line { background: transparent; color: var(--color-ink); border: 1px solid color-mix(in oklab, var(--color-line-gold) 70%, transparent); }
 .btn-line:hover { border-color: var(--color-line-gold); background: color-mix(in oklab, var(--color-gold) 7%, transparent); }
 
 /* Aliases for the flow components ported from the backend, so payment/composer
    markup stays untouched and still speaks this theme. */
-.btn-primary { background: var(--color-gold); color: var(--color-gold-ink); }
+.btn-primary { background: var(--color-gold-button); color: var(--color-gold-ink); }
 .btn-primary:hover { background: var(--color-gold-strong); }
 .btn-ghost { background: transparent; color: var(--color-ink); border: 1px solid color-mix(in oklab, var(--color-line-gold) 70%, transparent); }
 .btn-ghost:hover { border-color: var(--color-line-gold); background: color-mix(in oklab, var(--color-gold) 7%, transparent); }
@@ -228,6 +232,9 @@ html, body {
      tier, and the border colour is far too pale to carry small text. */
   --color-ink-faint: #827678;
   --color-gold: #8f6670;
+  /* Light inverts the direction: the button sits at the accent and darkens
+     on hover, where dark lifts. */
+  --color-gold-button: #8f6670;
   --color-gold-strong: #78525b;
   --color-gold-ink: #fffdfc;
   /* Pushed redder than the accent on purpose: a mauve error beside a mauve
