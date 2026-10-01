@@ -65,11 +65,29 @@ export const chains = {
 } as const;
 
 /** "₹5 reveals the whole note — the words, the voice note and the photo." */
-export function revealsLine(pricePaise: number, allowVoice: boolean, allowImage: boolean): string {
+export function revealsLine(pricePaise: number, allowVoice: boolean, allowImage: boolean, isFree = false): string {
   const parts = ['the words', allowVoice && 'the voice note', allowImage && 'the photo'].filter(Boolean) as string[];
   const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}` : parts[0];
-  return `${rupees(pricePaise)} reveals the whole note — ${list}.`;
+  // Sat directly under the button, so during the free week it was the one
+  // line still quoting a price nobody was being asked for.
+  return isFree
+    ? `Free this week — you get the whole note: ${list}.`
+    : `${rupees(pricePaise)} reveals the whole note — ${list}.`;
 }
+
+/** Shown only while PAYMENT_GATEWAY is mock. See lib/free.ts. */
+export const free = {
+  badge: 'Free this week',
+  banner: 'Free until Sunday — ₹5 a note after that.',
+  sheetTitle: 'Finding a stranger’s note…',
+  sheetOpening: 'Opening it now…',
+  sheetNote: 'Free while we are starting out. Nothing is charged, and no payment details are asked for.',
+  seconds: 'seconds',
+  cancel: 'Not now',
+  cta: 'Reveal this note — free',
+  ctaMany: (n: number) => `Reveal all ${n} — free`,
+  ctaFirst: 'Leave the opening note — free',
+} as const;
 
 export const teaser = {
   hero: (position: number) => `${formatPosition(position)} left something for you.`,

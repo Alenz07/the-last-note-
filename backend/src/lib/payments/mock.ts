@@ -9,9 +9,11 @@ import type {
 } from './types';
 
 /**
- * TEST MODE gateway. No money moves. The checkout sheet in the browser
- * "pays" by calling /api/pay/verify with paymentId `mock_pay_*` and signature `mock`.
- * Never run this with PAYMENT_GATEWAY=mock in front of real users.
+ * No gateway. No money moves — the sheet in the browser "pays" by calling
+ * /api/pay/verify with paymentId `mock_pay_*` and signature `mock`.
+ *
+ * This is also what runs the free trial, so the strings below are shown to
+ * real people: no TEST MODE shouting, and no price, since nothing is charged.
  */
 export class MockGateway implements PaymentGateway {
   readonly name = 'mock' as const;
@@ -21,8 +23,8 @@ export class MockGateway implements PaymentGateway {
     return {
       orderId: `mock_order_${randomToken(9)}`,
       checkout: {
-        name: 'dernote (TEST MODE)',
-        description: `₹${(input.amountPaise / 100).toFixed(0)} · one reveal + one link`,
+        name: 'dernote',
+        description: 'One note opens, then twenty minutes to write yours.',
         currency: 'INR',
       },
     };

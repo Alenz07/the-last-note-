@@ -10,6 +10,8 @@ import { BoltIcon, ChainGlyph, ChainIcon, DownloadIcon, EyeIcon, LockIcon, MaskI
 import { Redacted } from '@/components/Redacted';
 import { ContactCard } from '@/components/Social';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { FreeBanner } from '@/components/FreeBanner';
+import { FREE } from '@/lib/free';
 
 /**
  * Rendered per request, not prerendered. This page is built on a laptop that
@@ -112,7 +114,7 @@ export default async function Landing() {
             ) : (
               <div className="mt-9">
                 <Link href={enterHref} className="btn btn-gold">
-                  <LockIcon /> Reveal the next note — {price}
+                  <LockIcon /> Reveal the next note — {FREE ? 'free' : price}
                 </Link>
               </div>
             )}
@@ -135,6 +137,8 @@ export default async function Landing() {
           {formatCount(totalNotes)} notes left by strangers — and counting.
         </p>
       ) : null}
+
+      <FreeBanner className="mt-10" />
 
       {/* ---------------- how · chains · why ---------------- */}
       <div className="mt-12 grid gap-4 lg:grid-cols-3">
@@ -275,7 +279,7 @@ function LatestNoteCard({ chain, sealed }: { chain: ChainSummary; sealed: Sealed
           Anonymous · {[sealed.city, ago].filter(Boolean).join(' · ')}
         </p>
         <div className="mt-5 border-t border-line pt-4 text-center text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-gold">
-          Reveal this note — {rupees(chain.pricePaise)}
+          Reveal this note — {FREE ? 'free' : rupees(chain.pricePaise)}
         </div>
       </article>
     </Link>

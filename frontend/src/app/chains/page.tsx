@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getChains, getTeaser } from '@/lib/api';
-import { chains as copy, landing, revealsLine, teaser } from '@/lib/copy';
+import { chains as copy, free as freeCopy, landing, revealsLine, teaser } from '@/lib/copy';
 import { formatCount, formatPosition, timeAgo } from '@/lib/format';
 import type { ChainSummary, SealedMeta } from '@/lib/types';
 import { BackLink, Page, SiteFooter, SiteHeader } from '@/components/Chrome';
+import { FreeBanner } from '@/components/FreeBanner';
+import { FREE } from '@/lib/free';
 import { ChainGlyph, LockIcon } from '@/components/Icons';
 import { Redacted } from '@/components/Redacted';
 
@@ -41,6 +43,8 @@ export default async function ChainsPage() {
         <p className="mx-auto mt-4 max-w-md text-[1.02rem] leading-relaxed text-ink-muted">{copy.sub}</p>
         <span aria-hidden className="mx-auto mt-8 block h-px w-10 bg-line-gold" />
       </section>
+
+      <FreeBanner className="mb-6" />
 
       {rows.length === 0 ? (
         <p className="card p-8 text-center text-ink-muted">{copy.empty}</p>
@@ -100,10 +104,16 @@ function ChainRow({ chain, sealed }: { chain: ChainSummary; sealed: SealedMeta |
 
       <Link href={`/c/${chain.slug}`} className="btn btn-gold mt-5 w-full">
         <LockIcon />
-        {sealed ? copy.reveal(chain.pricePaise) : teaser.ctaFirst(chain.pricePaise)}
+        {FREE
+          ? sealed
+            ? freeCopy.cta
+            : freeCopy.ctaFirst
+          : sealed
+            ? copy.reveal(chain.pricePaise)
+            : teaser.ctaFirst(chain.pricePaise)}
       </Link>
       <p className="mt-3 text-center text-xs leading-relaxed text-ink-faint">
-        {revealsLine(chain.pricePaise, chain.allowVoice, chain.allowImage)}
+        {revealsLine(chain.pricePaise, chain.allowVoice, chain.allowImage, FREE)}
       </p>
       <p className="mt-1 text-center text-xs text-ink-faint">
         {landing.lastLink(ago, chain.stats.lastCity)}

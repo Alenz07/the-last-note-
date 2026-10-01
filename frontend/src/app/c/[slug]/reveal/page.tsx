@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getRevealView } from '@/lib/api';
 import { reveal as copy, errors } from '@/lib/copy';
 import { Composer, EventBeacon, PayButton, ReportButton } from '@/components/flow';
+import { free as freeCopy } from '@/lib/copy';
+import { FREE } from '@/lib/free';
 import { Page, SiteFooter, SiteHeader } from '@/components/Chrome';
 import { LockIcon, QuillIcon } from '@/components/Icons';
 import { RevealedNote } from '@/components/NoteCard';
@@ -57,7 +59,7 @@ export default async function RevealPage({ searchParams }: PageProps<'/c/[slug]/
             chainSlug={chain.slug}
             pricePaise={chain.pricePaise}
             revealCount={chain.revealCount}
-            label={copy.readAnother.cta(`₹${Math.round(chain.pricePaise / 100)}`)}
+            label={FREE ? freeCopy.cta : copy.readAnother.cta(`₹${Math.round(chain.pricePaise / 100)}`)}
           />
         </section>
       ) : null}

@@ -1,63 +1,71 @@
 'use client';
 
-import { useState } from 'react';
-import { SITE } from '@/lib/copy';
+import { useEffect, useRef, useState } from 'react';
+import { free as copy } from '@/lib/copy';
+
+/** How long the sheet holds before the note opens. */
+const SECONDS = 30;
 
 /**
- * TEST MODE checkout. Looks enough like a UPI sheet to exercise the whole
- * funnel; screams that no money moves. Replaced by Razorpay Checkout.js when
- * PAYMENT_GATEWAY=razorpay.
+ * The free-trial reveal. Stands exactly where the gateway's sheet stands, so
+ * the funnel keeps its shape and switching back to Cashfree is one env var —
+ * but it takes no money and says so. The wait is deliberate: the pause before
+ * a note opens is part of the product, and it keeps the free flow feeling the
+ * same length as the paid one, so nothing gets slower on launch day.
  */
 export function MockCheckoutSheet({
-  amountPaise,
   description,
   onPay,
-  onFail,
   onClose,
 }: {
   amountPaise: number;
   description: string;
   onPay: () => Promise<void>;
-  onFail: () => void;
   onClose: () => void;
 }) {
-  const [busy, setBusy] = useState(false);
-  const rupees = (amountPaise / 100).toFixed(0);
+  const [left, setLeft] = useState(SECONDS);
+  const fired = useRef(false);
+
+  useEffect(() => {
+    const id = setInterval(() => setLeft((n) => (n <= 1 ? 0 : n - 1)), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const done = left === 0;
+
+  useEffect(() => {
+    if (!done || fired.current) return;
+    fired.current = true;
+    void onPay();
+  }, [done, onPay]);
+
+  const progress = ((SECONDS - left) / SECONDS) * 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60" role="dialog" aria-modal="true" aria-label="Test mode checkout">
-      <div className="w-full max-w-md rounded-t-3xl border border-line bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent">
-          Test mode
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70" role="dialog" aria-modal="true" aria-label={copy.sheetTitle}>
+      <div className="w-full max-w-md rounded-t-3xl border border-line bg-surface p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+        <span className="inline-flex items-center rounded-full border border-line-gold/60 bg-gold/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-gold">
+          {copy.badge}
+        </span>
+
+        <p className="serif mt-5 text-[1.45rem] leading-snug text-ink">{done ? copy.sheetOpening : copy.sheetTitle}</p>
+        <p className="mt-2 text-sm leading-relaxed text-ink-muted">{description}</p>
+
+        <div className="mt-7 flex flex-col items-center">
+          <span className="num serif text-[3.4rem] leading-none text-gold" aria-live="off">
+            {left}
+          </span>
+          <span className="mt-1 text-xs uppercase tracking-[0.16em] text-ink-faint">{copy.seconds}</span>
+          <div className="mt-5 h-px w-full overflow-hidden bg-line">
+            <div className="h-full bg-gold transition-[width] duration-1000 ease-linear" style={{ width: `${progress}%` }} />
+          </div>
         </div>
-        <p className="text-sm text-ink-muted">{SITE.testMode}</p>
-        <div className="mt-4 flex items-baseline justify-between">
-          <span className="text-ink-muted">{description}</span>
-          <span className="display text-3xl">₹{rupees}</span>
-        </div>
-        <div className="mt-5 grid gap-2">
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              try {
-                await onPay();
-              } finally {
-                setBusy(false);
-              }
-            }}
-          >
-            {busy ? 'Confirming…' : `Pay ₹${rupees} (simulate UPI success)`}
-          </button>
-          <button type="button" className="btn btn-ghost" disabled={busy} onClick={onFail}>
-            Simulate failure
-          </button>
-          <button type="button" className="btn btn-quiet" disabled={busy} onClick={onClose}>
-            Cancel
-          </button>
-        </div>
+
+        <p className="mt-6 text-center text-xs leading-relaxed text-ink-faint">{copy.sheetNote}</p>
+
+        <button type="button" className="btn btn-quiet mt-3 w-full" disabled={done} onClick={onClose}>
+          {copy.cancel}
+        </button>
       </div>
     </div>
   );

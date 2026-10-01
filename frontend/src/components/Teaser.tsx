@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTeaser } from '@/lib/api';
-import { revealsLine, teaser as copy } from '@/lib/copy';
+import { free as freeCopy, revealsLine, teaser as copy } from '@/lib/copy';
+import { FREE } from '@/lib/free';
+import { FreeBanner } from '@/components/FreeBanner';
 import { EventBeacon, LiveStats, PayButton } from '@/components/flow';
 import { BackLink, Page, SiteFooter, SiteHeader } from '@/components/Chrome';
 import { ChainIcon, EyeIcon, LockIcon, QuillIcon } from '@/components/Icons';
@@ -70,6 +72,7 @@ export async function Teaser({ slug, position }: { slug: string; position?: numb
       <div className="mt-8">
         {live ? (
           <>
+            <FreeBanner className="mb-4" />
             <PayButton
               className="[&>button]:w-full"
               chainSlug={chain.slug}
@@ -77,9 +80,18 @@ export async function Teaser({ slug, position }: { slug: string; position?: numb
               pricePaise={chain.pricePaise}
               isFirst={!sealed}
               revealCount={chain.revealCount}
+              label={
+                FREE
+                  ? !sealed
+                    ? freeCopy.ctaFirst
+                    : chain.revealCount > 1
+                      ? freeCopy.ctaMany(chain.revealCount)
+                      : freeCopy.cta
+                  : undefined
+              }
             />
             <p className="mt-3 text-center text-sm leading-relaxed text-ink-muted">
-              {revealsLine(chain.pricePaise, chain.allowVoice, chain.allowImage)}
+              {revealsLine(chain.pricePaise, chain.allowVoice, chain.allowImage, FREE)}
             </p>
             <p className="mt-2 flex items-center justify-center gap-2 text-center text-sm text-ink-faint">
               <LockIcon size={13} />

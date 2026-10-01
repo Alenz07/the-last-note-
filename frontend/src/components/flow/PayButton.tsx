@@ -106,7 +106,7 @@ export function PayButton({
       }
       const j = (await res.json()) as PayIntentResponse;
 
-      /* ---- TEST MODE: our own sheet, no money ---- */
+      /* ---- No gateway: our own sheet, no money, nothing charged ---- */
       if (j.gateway === 'mock') {
         setIntent(j);
         return;
@@ -202,11 +202,6 @@ export function PayButton({
               setIntent(null);
               setBusy(false);
             }
-          }}
-          onFail={() => {
-            setIntent(null);
-            setBusy(false);
-            setError('Payment failed (simulated). Nothing was charged.');
           }}
           onClose={() => {
             setIntent(null);
