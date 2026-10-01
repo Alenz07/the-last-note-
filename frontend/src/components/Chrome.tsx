@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { SITE } from '@/lib/copy';
 import { QuillIcon } from './Icons';
 import { SocialLinks } from './Social';
+import { ThemeToggle } from './ThemeToggle';
 
 /** Wordmark + optional centre nav + one action. Shared by every page. */
 export function SiteHeader({ nav, action }: { nav?: ReactNode; action?: ReactNode }) {
@@ -13,7 +14,10 @@ export function SiteHeader({ nav, action }: { nav?: ReactNode; action?: ReactNod
         <span className="mt-0.5 hidden text-[11px] text-ink-faint sm:block">{SITE.tagline}</span>
       </Link>
       {nav}
-      {action}
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        {action}
+      </div>
     </header>
   );
 }

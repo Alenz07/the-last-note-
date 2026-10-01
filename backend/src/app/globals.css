@@ -114,3 +114,26 @@ body {
 }
 
 audio { width: 100%; color-scheme: dark; }
+
+/* ------------------------------------------------------------------
+   LIGHT MODE — same tokens as the public site, so the legal pages and
+   the flow components follow the toggle. Both apps are served from one
+   origin, so they read the same localStorage key.
+   ------------------------------------------------------------------ */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #f8f4f3;
+  --color-surface: #fffdfc;
+  --color-surface-2: #f0e9e8;
+  --color-line: #e6dcdd;
+  --color-line-gold: #b89aa3;
+  --color-ink: #292426;
+  --color-ink-muted: #756b6d;
+  --color-ink-faint: #827678;
+  --color-accent: #8f6670;
+  --color-accent-strong: #78525b;
+  --color-accent-ink: #fffdfc;
+  --color-danger: #b3352f;
+}
+:root[data-theme='light'] audio { color-scheme: light; }

@@ -195,3 +195,73 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .redacted > span { animation: none; }
 }
+
+/* ------------------------------------------------------------------
+   LIGHT MODE — soft rose-grey paper + dusty mauve.
+   bg #F8F4F3 · card #FFFDFC · ink #292426 · accent #8F6670
+
+   Opt-in only: dark stays the default, because the candlelit ground is
+   the brand and prefers-color-scheme would flip it for most visitors
+   without them asking. The toggle sets data-theme and remembers it.
+
+   The token is still called --color-gold: renaming it would mean touching
+   every text-gold / bg-gold / border-line-gold in both apps. It holds the
+   mauve here. Read it as “the accent”.
+
+   Cards invert their relationship to the page: in the dark theme they sink
+   below the ground, in this one they lift above it.
+   ------------------------------------------------------------------ */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #f8f4f3;
+  --color-surface: #f2eceb;
+  /* Recessed against the card, so inputs still read as wells. */
+  --color-surface-2: #f0e9e8;
+  --color-card: #fffdfc;
+  --color-line: #e6dcdd;
+  /* Accent-tinted rule: section underlines, outlined buttons, icon rings. */
+  --color-line-gold: #b89aa3;
+  --color-ink: #292426;
+  --color-ink-muted: #756b6d;
+  /* Between the secondary and the border — the given pair leaves no faint
+     tier, and the border colour is far too pale to carry small text. */
+  --color-ink-faint: #827678;
+  --color-gold: #8f6670;
+  --color-gold-strong: #78525b;
+  --color-gold-ink: #fffdfc;
+  /* Pushed redder than the accent on purpose: a mauve error beside a mauve
+     accent stops reading as a warning. */
+  --color-danger: #b3352f;
+}
+
+/* A white inset and a near-opaque black drop both read as grime on paper. */
+:root[data-theme='light'] .card-glow {
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.9) inset,
+    0 18px 44px -24px rgb(74 56 61 / 0.26),
+    0 0 60px -28px color-mix(in oklab, var(--color-gold) 24%, transparent);
+}
+
+/* The dark-brown floor wash exists to sink the arch into blackness. On a pale
+   ground it reads as a stain, so the scene becomes soft rose light instead. */
+:root[data-theme='light'] .arch-scene::before {
+  background:
+    radial-gradient(34% 46% at 62% 78%, color-mix(in oklab, #c99aa4 24%, transparent) 0%, transparent 100%),
+    radial-gradient(62% 76% at 62% 88%, color-mix(in oklab, var(--color-gold) 10%, transparent) 0%, transparent 100%),
+    radial-gradient(120% 110% at 60% 105%, color-mix(in oklab, #ead9dc 64%, transparent) 0%, transparent 76%);
+}
+:root[data-theme='light'] .arch-scene > img.arch-img { opacity: 0.26; }
+:root[data-theme='light'] .arch-scene > svg.arch-lines { opacity: 0.42; }
+
+/* Redaction bars mix from ink so they flip automatically — but 15% of
+   near-black on a pale ground is too faint to read as hidden words. */
+:root[data-theme='light'] .redacted > span {
+  background: color-mix(in oklab, var(--color-ink) 20%, transparent);
+}
+
+/* Toggle icon: offer the theme you'd switch *to*, chosen in CSS so it is
+   already correct on the first frame, before any JS has run. */
+.theme-moon { display: none; }
+:root[data-theme='light'] .theme-sun { display: none; }
+:root[data-theme='light'] .theme-moon { display: block; }

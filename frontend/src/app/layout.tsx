@@ -35,8 +35,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+    <html lang="en" className={`${instrumentSerif.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="flex min-h-full flex-col">
+        {/* First thing in the body, synchronous: a light-mode visitor must not
+            watch the page load dark and then flip. It cannot sit directly under
+            <html> — that is invalid HTML and React refuses to order it. The
+            toggle writes this key; both apps are on one origin, so both read it. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('dernote-theme')==='light'){document.documentElement.setAttribute('data-theme','light')}}catch(e){}`,
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
