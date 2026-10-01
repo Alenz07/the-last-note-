@@ -11,11 +11,12 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = { title: 'Grievance' };
 
-const UPDATED = '2026-08-23';
+const UPDATED = '2026-09-29';
 
-/** Set GRIEVANCE_NAME / GRIEVANCE_EMAIL / GRIEVANCE_ADDRESS in the environment; placeholders stay visible until then. */
+/** Set GRIEVANCE_NAME / GRIEVANCE_EMAIL / GRIEVANCE_PHONE / GRIEVANCE_ADDRESS in the environment; placeholders stay visible until then. */
 const OFFICER = process.env.GRIEVANCE_NAME || '[Name]';
 const EMAIL = process.env.GRIEVANCE_EMAIL || '';
+const PHONE = process.env.GRIEVANCE_PHONE || '';
 const ADDRESS = process.env.GRIEVANCE_ADDRESS || '[postal address]';
 
 export default function GrievancePage() {
@@ -37,6 +38,15 @@ export default function GrievancePage() {
             '[email]'
           )}
           <br />
+          {PHONE ? (
+            <>
+              <a href={`tel:${PHONE.replace(/\s/g, '')}`} className="text-ink">
+                {PHONE}
+              </a>{' '}
+              (WhatsApp)
+              <br />
+            </>
+          ) : null}
           {ADDRESS}
         </p>
       </LegalSection>
