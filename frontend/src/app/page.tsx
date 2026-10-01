@@ -9,8 +9,17 @@ import { ArchScene } from '@/components/ArchScene';
 import { BoltIcon, ChainGlyph, ChainIcon, DownloadIcon, EyeIcon, LockIcon, MaskIcon, PersonIcon, QuillIcon, ShieldIcon, WhatsAppIcon } from '@/components/Icons';
 import { Redacted } from '@/components/Redacted';
 import { ContactCard } from '@/components/Social';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
-export const revalidate = 5;
+/**
+ * Rendered per request, not prerendered. This page is built on a laptop that
+ * cannot reach the backend, so a prerender bakes in an empty chain list — and
+ * ISR then serves that baked page to the first visitor after every quiet
+ * period, advertising “no chains are open” on a site whose chains are live.
+ * The fetches underneath are still cached for 5s, so the backend sees the same
+ * load either way.
+ */
+export const dynamic = 'force-dynamic';
 
 /* ------------------------------------------------------------------ copy (mockup voice) */
 const HERO_SUB = ['You don’t know who.', 'You don’t know why.', 'You can only read what they left behind.'];
@@ -51,13 +60,20 @@ export default async function Landing() {
           <span className="wordmark text-lg text-ink">{SITE.name}</span>
           <span className="mt-0.5 hidden text-[11px] text-ink-faint sm:block">{SITE.tagline}</span>
         </Link>
-        <nav className="hidden items-center gap-8 text-sm text-ink-muted md:flex">
+        <nav className="hidden items-center gap-6 text-sm text-ink-muted md:flex">
           <span className="border-b border-gold pb-0.5 text-ink">Home</span>
           <Link href="/chains" className="hover:text-ink">Chains</Link>
           {/* Downloads the manual — a plain <a> so Next doesn't prefetch a PDF. */}
           <a href="/manual" className="hover:text-ink">How it works</a>
           <a href="#why" className="hover:text-ink">About</a>
+          {/* The same two utility links the inner pages carry. Held back to lg:
+              at tablet width six items plus the wordmark and the CTA do not fit. */}
+          <span className="hidden h-3 w-px bg-line lg:block" aria-hidden />
+          <Link href="/me" className="hidden hover:text-ink lg:block">Your notes</Link>
+          <Link href="/find" className="hidden hover:text-ink lg:block">Lost a note?</Link>
         </nav>
+        <div className="flex items-center gap-3">
+        <ThemeToggle />
         {preLaunch && SOCIAL.whatsapp ? (
           <a href={SOCIAL.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-gold !min-h-10 !px-4 !text-[0.78rem]">
             <WhatsAppIcon size={14} /> Join the channel
@@ -67,6 +83,7 @@ export default async function Landing() {
             <QuillIcon size={14} /> Write a note
           </Link>
         )}
+        </div>
       </header>
 
       {/* ---------------- hero ---------------- */}
@@ -150,6 +167,28 @@ export default async function Landing() {
           </p>
         </section>
 
+        {/* Phone and tablet only: the header nav carrying these two appears at lg
+            and up, and the footer is a long scroll from here. This sits under
+            "How it works" because that is where someone reads about the twenty
+            minutes and realises they need to get back to a slot they left. */}
+        <section className="card p-7 lg:hidden">
+          <h2 className="section-h">Come back to a note</h2>
+          <p className="mx-auto mt-4 max-w-xs text-center text-[15px] leading-relaxed text-ink-muted">
+            Closed the page while writing, or lost the note you paid for? Nothing is gone.
+          </p>
+          <div className="mt-6 flex flex-col gap-3">
+            <Link href="/me" className="btn btn-line w-full">
+              <PersonIcon size={15} /> Your notes
+            </Link>
+            <Link href="/find" className="btn btn-line w-full">
+              <EyeIcon size={15} /> Lost a note?
+            </Link>
+          </div>
+          <p className="mt-3 text-center text-xs leading-relaxed text-ink-faint">
+            Your notes needs the same device · Lost a note? needs your payment ID.
+          </p>
+        </section>
+
         <section id="chains" className="card scroll-mt-8 p-7">
           <Link href="/chains" className="focus:outline-none">
             <h2 className="section-h">Explore chains</h2>
@@ -202,6 +241,9 @@ export default async function Landing() {
       <footer className="mt-10 flex flex-col items-center gap-3 border-t border-line pt-7 text-xs text-ink-faint">
         <span className="wordmark text-sm text-ink-muted">{SITE.name}</span>
         <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1">
+          {/* Carries /me and /find on phones, where the header nav is hidden. */}
+          <Link href="/me" className="hover:text-ink-muted">Your notes</Link>
+          <Link href="/find" className="hover:text-ink-muted">Lost a note?</Link>
           <Link href="/terms" className="hover:text-ink-muted">Terms</Link>
           <Link href="/privacy" className="hover:text-ink-muted">Privacy</Link>
           <Link href="/refunds" className="hover:text-ink-muted">Refunds</Link>
