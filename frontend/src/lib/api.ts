@@ -29,6 +29,8 @@ const live = { cache: 'no-store' as const };
 
 export async function getChains(): Promise<ChainSummary[]> {
   const data = await get<{ chains: ChainSummary[] }>('/api/chains', cached(5));
+  // Safe to fail soft only because the pages that call this are force-dynamic:
+  // nothing persists an empty render, so a blip corrects on the next request.
   return data?.chains ?? [];
 }
 

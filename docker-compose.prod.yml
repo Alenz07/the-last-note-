@@ -37,7 +37,12 @@ services:
     environment:
       # Only used by routes Caddy does not split off; server-side calls go direct.
       BACKEND_URL: http://app:3000
-    depends_on: [app]
+    # Not the short form: that waits only for app's container to start, so on a
+    # deploy web could answer a request before app was listening, cache an empty
+    # chain list as a good render, and keep serving it. app has a HEALTHCHECK.
+    depends_on:
+      app:
+        condition: service_healthy
     expose: ['3001']
   db:
     image: postgres:17-alpine

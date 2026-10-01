@@ -9,7 +9,15 @@ import { ChainGlyph, LockIcon } from '@/components/Icons';
 import { Redacted } from '@/components/Redacted';
 
 /** Pick a chain, then reveal its latest note. Sits between the landing and the teaser. */
-export const revalidate = 5;
+/**
+ * Rendered per request, not prerendered. This page is built on a laptop that
+ * cannot reach the backend, so a prerender bakes in an empty chain list — and
+ * ISR then serves that baked page to the first visitor after every quiet
+ * period, advertising “no chains are open” on a site whose chains are live.
+ * The fetches underneath are still cached for 5s, so the backend sees the same
+ * load either way.
+ */
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: copy.title,

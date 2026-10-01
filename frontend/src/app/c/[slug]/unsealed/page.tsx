@@ -6,11 +6,15 @@ import { unseal as copy } from '@/lib/copy';
 import { formatCount, timeAgo } from '@/lib/format';
 import { BackLink, Page, SiteFooter, SiteHeader } from '@/components/Chrome';
 
-/** The public archive — text only, and only once the chain has moved well past it. */
-export const revalidate = 60;
-export function generateStaticParams() {
-  return [];
-}
+/**
+ * The public archive — text only, and only once the chain has moved well past it.
+ *
+ * Dynamic, not ISR: the page number comes from ?page=, and a statically
+ * rendered page cannot read the query string — declaring revalidate here made
+ * every request throw DYNAMIC_SERVER_USAGE and return a bare 500. The fetch
+ * underneath is still cached for 60s, so the backend sees the same load.
+ */
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PageProps<'/c/[slug]/unsealed'>): Promise<Metadata> {
   const { slug } = await params;
