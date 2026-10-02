@@ -20,6 +20,21 @@ export const revealModeEnum = pgEnum('reveal_mode', ['referrer', 'latest']);
 
 const ts = (name: string) => timestamp(name, { withTimezone: true, mode: 'date' });
 
+/**
+ * One row, forever — the CHECK on the primary key makes a second one
+ * impossible. Everything here is something an operator changes at runtime,
+ * so it lives in the database instead of the environment: changing it is a
+ * save, not a rebuild and a redeploy.
+ */
+export const settings = pgTable('settings', {
+  id: boolean('id').primaryKey().default(true).notNull(),
+  freeMode: boolean('free_mode').notNull().default(false),
+  freeBanner: text('free_banner').notNull().default('Free this week — ₹5 a note after that.'),
+  /** How long the reveal sheet holds before the note opens. */
+  revealHoldSeconds: integer('reveal_hold_seconds').notNull().default(10),
+  updatedAt: ts('updated_at').notNull().defaultNow(),
+});
+
 /** A themed chain. Every theme is a row, not code. */
 export const chains = pgTable('chains', {
   id: uuid('id').primaryKey().defaultRandom(),

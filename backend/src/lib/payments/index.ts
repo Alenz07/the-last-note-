@@ -17,7 +17,17 @@ export { MockGateway } from './mock';
 export { CashfreeGateway } from './cashfree';
 export { RazorpayGateway } from './razorpay';
 
-const g = globalThis as unknown as { __kadiGateway?: PaymentGateway };
+const g = globalThis as unknown as { __kadiGateway?: PaymentGateway; __kadiMockGateway?: MockGateway };
+
+/**
+ * The no-money gateway, kept alongside the real one rather than instead of it.
+ * Free mode is a settings row an operator flips at runtime, so both have to be
+ * reachable in the same process.
+ */
+export function getMockGateway(): PaymentGateway {
+  if (!g.__kadiMockGateway) g.__kadiMockGateway = new MockGateway();
+  return g.__kadiMockGateway;
+}
 
 /** One gateway per process, chosen by PAYMENT_GATEWAY. Swapping providers is an env change. */
 export function getGateway(): PaymentGateway {

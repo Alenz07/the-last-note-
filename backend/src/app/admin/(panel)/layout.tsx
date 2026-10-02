@@ -12,6 +12,7 @@ const NAV = [
   ['/admin/payments', 'Payments'],
   ['/admin/links', 'Find a link'],
   ['/admin/db', 'Database'],
+  ['/admin/settings', 'Settings'],
   ['/admin/chains/new', '+ Chain'],
 ] as const;
 

@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
       gateway: s.gateway.name,
       amountPaise: payment.amountPaise,
       checkout: order.checkout,
+      holdSeconds: s.settings.revealHoldSeconds,
     };
     const res = NextResponse.json(data);
     if (device.isNew) setDeviceCookie(res, device.id);

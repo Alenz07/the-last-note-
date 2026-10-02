@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { free as copy } from '@/lib/copy';
 
-/** How long the sheet holds before the note opens. */
-const SECONDS = 30;
+/** Only used if the server did not say. The real value is a settings row. */
+const FALLBACK_SECONDS = 10;
 
 /**
  * The free-trial reveal. Stands exactly where the gateway's sheet stands, so
@@ -15,15 +15,19 @@ const SECONDS = 30;
  */
 export function MockCheckoutSheet({
   description,
+  holdSeconds,
   onPay,
   onClose,
 }: {
   amountPaise: number;
   description: string;
+  /** From /api/pay, which reads it from settings — changing it is a save. */
+  holdSeconds?: number;
   onPay: () => Promise<void>;
   onClose: () => void;
 }) {
-  const [left, setLeft] = useState(SECONDS);
+  const seconds = Number.isFinite(holdSeconds) && holdSeconds! >= 0 ? Math.floor(holdSeconds!) : FALLBACK_SECONDS;
+  const [left, setLeft] = useState(seconds);
   const fired = useRef(false);
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export function MockCheckoutSheet({
     void onPay();
   }, [done, onPay]);
 
-  const progress = ((SECONDS - left) / SECONDS) * 100;
+  const progress = seconds === 0 ? 100 : ((seconds - left) / seconds) * 100;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70" role="dialog" aria-modal="true" aria-label={copy.sheetTitle}>

@@ -1,6 +1,5 @@
 import { randomToken } from '../crypto';
 import type {
-  CreateOrderInput,
   CreatedOrder,
   OrderStatus,
   PaymentGateway,
@@ -19,7 +18,7 @@ export class MockGateway implements PaymentGateway {
   readonly name = 'mock' as const;
   readonly verifyMode = 'signature' as const;
 
-  async createOrder(input: CreateOrderInput): Promise<CreatedOrder> {
+  async createOrder(): Promise<CreatedOrder> {
     return {
       orderId: `mock_order_${randomToken(9)}`,
       checkout: {

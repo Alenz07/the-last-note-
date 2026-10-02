@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getTeaser } from '@/lib/api';
+import { getSettings, getTeaser } from '@/lib/api';
 import { free as freeCopy, revealsLine, teaser as copy } from '@/lib/copy';
-import { FREE } from '@/lib/free';
 import { FreeBanner } from '@/components/FreeBanner';
 import { EventBeacon, LiveStats, PayButton } from '@/components/flow';
 import { BackLink, Page, SiteFooter, SiteHeader } from '@/components/Chrome';
@@ -20,7 +19,8 @@ const STEPS = [
  * Shared by /c/[slug] (latest) and /c/[slug]/[position] (share landing).
  */
 export async function Teaser({ slug, position }: { slug: string; position?: number }) {
-  const data = await getTeaser(slug, position);
+  const [data, settings] = await Promise.all([getTeaser(slug, position), getSettings()]);
+  const FREE = settings.freeMode;
   if (!data) notFound();
   const { chain, sealed, isReferral } = data;
 
@@ -72,7 +72,7 @@ export async function Teaser({ slug, position }: { slug: string; position?: numb
       <div className="mt-8">
         {live ? (
           <>
-            <FreeBanner className="mb-4" />
+            <FreeBanner text={settings.freeBanner} className="mb-4" />
             <PayButton
               className="[&>button]:w-full"
               chainSlug={chain.slug}

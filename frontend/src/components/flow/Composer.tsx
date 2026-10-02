@@ -127,7 +127,12 @@ export function Composer({
       {chain.allowContact ? (
         <div className="grid gap-2">
           {!contactOpen ? (
-            <button type="button" className="btn btn-quiet justify-start px-0 text-left" onClick={() => setContactOpen(true)} disabled={busy}>
+            <button
+              type="button"
+              className="btn btn-quiet justify-start px-0 text-left !text-[0.95rem]"
+              onClick={() => setContactOpen(true)}
+              disabled={busy}
+            >
               + {reveal.contactToggle}
             </button>
           ) : (

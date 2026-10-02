@@ -1,12 +1,11 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { getChains, getTeaser } from '@/lib/api';
+import { getChains, getSettings, getTeaser } from '@/lib/api';
 import { chains as copy, free as freeCopy, landing, revealsLine, teaser } from '@/lib/copy';
 import { formatCount, formatPosition, timeAgo } from '@/lib/format';
 import type { ChainSummary, SealedMeta } from '@/lib/types';
 import { BackLink, Page, SiteFooter, SiteHeader } from '@/components/Chrome';
 import { FreeBanner } from '@/components/FreeBanner';
-import { FREE } from '@/lib/free';
 import { ChainGlyph, LockIcon } from '@/components/Icons';
 import { Redacted } from '@/components/Redacted';
 
@@ -27,7 +26,8 @@ export const metadata: Metadata = {
 };
 
 export default async function ChainsPage() {
-  const list = await getChains();
+  const [list, settings] = await Promise.all([getChains(), getSettings()]);
+  const FREE = settings.freeMode;
   const teasers = await Promise.all(list.map((c) => getTeaser(c.slug)));
   const rows = list.map((chain, i) => ({ chain, sealed: teasers[i]?.sealed ?? null }));
 
@@ -44,14 +44,14 @@ export default async function ChainsPage() {
         <span aria-hidden className="mx-auto mt-8 block h-px w-10 bg-line-gold" />
       </section>
 
-      <FreeBanner className="mb-6" />
+      <FreeBanner text={settings.freeBanner} className="mb-6" />
 
       {rows.length === 0 ? (
         <p className="card p-8 text-center text-ink-muted">{copy.empty}</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {rows.map(({ chain, sealed }) => (
-            <ChainRow key={chain.id} chain={chain} sealed={sealed} />
+            <ChainRow key={chain.id} chain={chain} sealed={sealed} free={FREE} />
           ))}
         </ul>
       )}
@@ -61,7 +61,7 @@ export default async function ChainsPage() {
   );
 }
 
-function ChainRow({ chain, sealed }: { chain: ChainSummary; sealed: SealedMeta | null }) {
+function ChainRow({ chain, sealed, free: FREE }: { chain: ChainSummary; sealed: SealedMeta | null; free: boolean }) {
   const ago = chain.stats.lastLinkAt ? timeAgo(chain.stats.lastLinkAt) : null;
 
   return (

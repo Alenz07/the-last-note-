@@ -119,6 +119,8 @@ export type RevealView = {
 };
 
 export type PayIntentResponse = {
+  /** How long the free-reveal sheet holds, from settings. */
+  holdSeconds?: number;
   orderId: string;
   gateway: 'mock' | 'razorpay' | 'cashfree';
   amountPaise: number;

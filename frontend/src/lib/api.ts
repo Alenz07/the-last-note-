@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import type { ChainSummary, MyLink, MyLinkFull, RevealView, TeaserData, UnsealedPage } from './types';
+import type { ChainSummary, MyLink, MyLinkFull, RevealView, SettingsView, TeaserData, UnsealedPage } from './types';
 
 /**
  * Server-side reads from the backend. Public reads are ISR-cached; anything
@@ -32,6 +32,16 @@ export async function getChains(): Promise<ChainSummary[]> {
   // Safe to fail soft only because the pages that call this are force-dynamic:
   // nothing persists an empty render, so a blip corrects on the next request.
   return data?.chains ?? [];
+}
+
+/**
+ * The knobs an operator turns in the admin panel. Defaults charge money: if
+ * the backend cannot be reached, giving the product away by accident is the
+ * worse of the two failures.
+ */
+export async function getSettings(): Promise<SettingsView> {
+  const data = await get<SettingsView>('/api/settings', cached(5));
+  return data ?? { freeMode: false, freeBanner: '', revealHoldSeconds: 10 };
 }
 
 export async function getTeaser(slug: string, position?: number): Promise<TeaserData | null> {

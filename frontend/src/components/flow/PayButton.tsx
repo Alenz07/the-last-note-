@@ -190,6 +190,7 @@ export function PayButton({
         <MockCheckoutSheet
           amountPaise={intent.amountPaise}
           description={intent.checkout.description}
+          holdSeconds={intent.holdSeconds}
           onPay={async () => {
             try {
               await finish({

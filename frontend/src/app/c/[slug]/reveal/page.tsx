@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getRevealView } from '@/lib/api';
+import { getRevealView, getSettings } from '@/lib/api';
 import { reveal as copy, errors } from '@/lib/copy';
 import { Composer, EventBeacon, PayButton, ReportButton } from '@/components/flow';
 import { free as freeCopy } from '@/lib/copy';
-import { FREE } from '@/lib/free';
 import { Page, SiteFooter, SiteHeader } from '@/components/Chrome';
 import { FollowCard } from '@/components/Social';
 import { LockIcon, QuillIcon } from '@/components/Icons';
@@ -20,7 +19,8 @@ export default async function RevealPage({ searchParams }: PageProps<'/c/[slug]/
   const token = typeof t === 'string' ? t : null;
   if (!token) notFound();
 
-  const view = await getRevealView(token);
+  const [view, settings] = await Promise.all([getRevealView(token), getSettings()]);
+  const FREE = settings.freeMode;
   if (!view) notFound();
   const { chain, me, revealed, canWrite, isFirst } = view;
 

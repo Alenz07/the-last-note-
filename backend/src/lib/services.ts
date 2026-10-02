@@ -1,7 +1,8 @@
 import { getDb, type Db } from '@/db';
 import { env } from './env';
 import { getKV, type KV } from './kv';
-import { getGateway, type PaymentGateway } from './payments';
+import { getGateway, getMockGateway, type PaymentGateway } from './payments';
+import { getSettings, type Settings } from './settings';
 import { getStorage, type Storage } from './storage';
 
 /**
@@ -13,6 +14,7 @@ export type Services = {
   kv: KV;
   storage: Storage;
   gateway: PaymentGateway;
+  settings: Settings;
   appUrl: string;
   now: () => Date;
 };
@@ -39,11 +41,15 @@ export function ensureSeeded(db: Db): Promise<void> {
 export async function getServices(): Promise<Services> {
   const db = await getDb();
   await ensureSeeded(db);
+  // Per request, not per process: free mode is a row someone can flip while
+  // the server is running, and the next payment has to respect it.
+  const settings = await getSettings(db);
   return {
     db,
     kv: getKV(),
     storage: getStorage(),
-    gateway: getGateway(),
+    gateway: settings.freeMode ? getMockGateway() : getGateway(),
+    settings,
     appUrl: env.appUrl,
     now: () => new Date(),
   };

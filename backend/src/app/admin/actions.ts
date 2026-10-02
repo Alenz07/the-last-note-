@@ -8,6 +8,7 @@ import { seedChains, seedDemoLinks } from '@/lib/chain/seed';
 import { asTint } from '@/lib/chain/types';
 import { isUuid } from '@/lib/crypto';
 import { getServices } from '@/lib/services';
+import { saveSettings } from '@/lib/settings';
 
 const str = (fd: FormData, k: string, max = 2000) => String(fd.get(k) ?? '').trim().slice(0, max);
 const int = (fd: FormData, k: string, dflt: number, min: number, max: number) => {
@@ -120,4 +121,23 @@ export async function findLinkAction(formData: FormData): Promise<void> {
     }
   }
   redirect(id ? `/admin/links/${id}` : `/admin/links?notfound=${encodeURIComponent(q)}`);
+}
+
+
+/**
+ * The runtime knobs. Free mode is deliberately not an env var: turning the
+ * price off is an operational decision, and it should not need a rebuild, a
+ * redeploy and a minute of downtime to make.
+ */
+export async function saveSettingsAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  await saveSettings({
+    freeMode: bool(formData, 'freeMode'),
+    freeBanner: str(formData, 'freeBanner', 160),
+    revealHoldSeconds: int(formData, 'revealHoldSeconds', 10, 0, 120),
+  });
+  // The public site reads these through its own fetch cache, so the panel
+  // telling the truth immediately is the most we can promise here.
+  revalidatePath('/admin/settings');
+  redirect('/admin/settings?saved=1');
 }

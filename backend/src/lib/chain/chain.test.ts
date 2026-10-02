@@ -4,6 +4,7 @@ import { createTestDb, type DbHandle } from '@/db';
 import { chains, links, payments } from '@/db/schema';
 import { MemoryKV } from '../kv';
 import { MockGateway } from '../payments/mock';
+import { SETTINGS_DEFAULTS } from '../settings';
 import type { Services } from '../services';
 import type { Storage } from '../storage';
 import { capturePayment, createPaymentIntent, ensureDevice, ModerationError, reportLink, submitLink, sweep, upsertChain } from './core';
@@ -42,6 +43,7 @@ beforeAll(async () => {
     kv: new MemoryKV(),
     storage: new MemStorage(),
     gateway: new MockGateway(),
+    settings: SETTINGS_DEFAULTS,
     appUrl: 'http://test',
     now: () => clock,
   };

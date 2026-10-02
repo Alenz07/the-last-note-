@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getChains, getTeaser } from '@/lib/api';
+import { getChains, getSettings, getTeaser } from '@/lib/api';
 import { formatCount, formatPosition, rupees, timeAgo } from '@/lib/format';
 import { SITE, SOCIAL } from '@/lib/site';
 import { launch as launchCopy } from '@/lib/copy';
@@ -11,7 +11,6 @@ import { Redacted } from '@/components/Redacted';
 import { ContactCard } from '@/components/Social';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { FreeBanner } from '@/components/FreeBanner';
-import { FREE } from '@/lib/free';
 
 /**
  * Rendered per request, not prerendered. This page is built on a laptop that
@@ -39,7 +38,8 @@ const WHY = [
 ];
 
 export default async function Landing() {
-  const chains = await getChains();
+  const [chains, settings] = await Promise.all([getChains(), getSettings()]);
+  const FREE = settings.freeMode;
   const teasers = await Promise.all(chains.map((c) => getTeaser(c.slug)));
   const featured = teasers.find((t) => t?.sealed) ?? teasers[0] ?? null;
   // submitted, not length: a slot that was paid for but never written into is
@@ -128,7 +128,7 @@ export default async function Landing() {
             </p>
           </div>
 
-          {featured?.sealed ? <LatestNoteCard chain={featured.chain} sealed={featured.sealed} /> : null}
+          {featured?.sealed ? <LatestNoteCard chain={featured.chain} sealed={featured.sealed} free={FREE} /> : null}
         </section>
       </ArchScene>
 
@@ -138,7 +138,7 @@ export default async function Landing() {
         </p>
       ) : null}
 
-      <FreeBanner className="mt-10" />
+      <FreeBanner text={settings.freeBanner} className="mt-10" />
 
       {/* ---------------- how · chains · why ---------------- */}
       <div className="mt-12 grid gap-4 lg:grid-cols-3">
@@ -262,7 +262,7 @@ export default async function Landing() {
 
 /* ------------------------------------------------------------------ pieces */
 
-function LatestNoteCard({ chain, sealed }: { chain: ChainSummary; sealed: SealedMeta }) {
+function LatestNoteCard({ chain, sealed, free: FREE }: { chain: ChainSummary; sealed: SealedMeta; free: boolean }) {
   const ago = sealed.submittedAt ? timeAgo(sealed.submittedAt) : null;
   return (
     <Link href={`/c/${chain.slug}`} className="block focus:outline-none lg:mt-4">

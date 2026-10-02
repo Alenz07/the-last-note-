@@ -126,6 +126,8 @@ export type UnsealedPage = {
 };
 
 export type PayIntentResponse = {
+  /** How long the free-reveal sheet holds, from settings. */
+  holdSeconds?: number;
   orderId: string;
   gateway: 'mock' | 'razorpay' | 'cashfree';
   amountPaise: number;
@@ -150,3 +152,10 @@ export type SubmitResponse =
   | { ok: true; linkUrl: string; position: number }
   | { ok: false; error: 'moderation'; reason: ModerationReason; message: string }
   | { ok: false; error: 'expired' | 'invalid' | 'banned' | 'rate_limited' | 'too_large' | 'server' | 'already_submitted'; message: string };
+
+/** Operator knobs, served by the backend's /api/settings. */
+export type SettingsView = {
+  freeMode: boolean;
+  freeBanner: string;
+  revealHoldSeconds: number;
+};
