@@ -57,5 +57,16 @@ export function SmallButton({ children, tone = 'ghost', ...rest }: { children: R
   );
 }
 
+/**
+ * The container runs on UTC, and en-IN alone only changes the formatting, not
+ * the clock — which produced Indian-looking timestamps five and a half hours
+ * out. The zone is named explicitly so it stays right wherever this runs.
+ */
 export const fmtDate = (d: Date | string | null | undefined) =>
-  d ? new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
+  d
+    ? new Date(d).toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone: 'Asia/Kolkata',
+      })
+    : '—';

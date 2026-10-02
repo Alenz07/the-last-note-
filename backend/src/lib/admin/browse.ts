@@ -56,7 +56,17 @@ export async function tableRows(
 /** Render any cell value as a short string. */
 export function cell(v: unknown): string {
   if (v === null || v === undefined) return '';
-  if (v instanceof Date) return v.toISOString();
+  // Was toISOString(), i.e. UTC. An operator judging whether a twenty-minute
+  // window had expired was reading a clock five and a half hours behind them.
+  if (v instanceof Date) {
+    return (
+      v.toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+        timeZone: 'Asia/Kolkata',
+      }) + ' IST'
+    );
+  }
   if (typeof v === 'object') return JSON.stringify(v);
   return String(v);
 }
