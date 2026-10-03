@@ -1,5 +1,6 @@
 /** Funnel event names accepted by the backend's /api/events. */
 export const EVENT_NAMES = [
+  'landing_view',
   'chain_view',
   'pay_click',
   'pay_created',

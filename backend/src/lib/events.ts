@@ -2,6 +2,7 @@ import type { Db } from '@/db';
 import { events } from '@/db/schema';
 
 export const EVENT_NAMES = [
+  'landing_view',
   'chain_view',
   'pay_click',
   'pay_created',

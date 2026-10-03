@@ -11,6 +11,7 @@ import { Redacted } from '@/components/Redacted';
 import { ContactCard } from '@/components/Social';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { FreeBanner } from '@/components/FreeBanner';
+import { LandingBeacon } from '@/components/LandingBeacon';
 
 /**
  * Rendered per request, not prerendered. This page is built on a laptop that
@@ -240,6 +241,11 @@ export default async function Landing() {
           <span className="block text-gold">Just people leaving something behind.</span>
         </p>
       </section>
+
+      {/* The funnel used to start at the chain page, so a QR scan that landed
+          here and went no further left no trace at all — which is exactly what
+          a printed chit produces. */}
+      <LandingBeacon />
 
       {/* ---------------- footer ---------------- */}
       <footer className="mt-10 flex flex-col items-center gap-3 border-t border-line pt-7 text-xs text-ink-faint">
